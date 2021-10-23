@@ -1,7 +1,7 @@
 # ignore all
 *
 
-#allow them
+# allow them
 !.gitignore
 !*/
 !*.py
