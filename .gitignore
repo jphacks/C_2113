@@ -1,0 +1,8 @@
+# ignore all
+*
+
+#allow them
+!.gitignore
+!*/
+!*.py
+!tts/text.txt
