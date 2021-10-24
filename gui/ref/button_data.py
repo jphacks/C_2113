@@ -46,7 +46,7 @@ class ExampleButton(Button):
             "ウィーンブリッジ発振回路":"非反転増幅とバンドパスフィルタを組み合わせた発振回路",
             "レインボーブリッジ":"東京湾にかかる橋"
         }
-        super().__init__("行列", list(self.dic.keys()))
+        super().__init__("計数工学", list(self.dic.keys()))
 
     def __call__(self, choice):
         if choice in self.dic:
