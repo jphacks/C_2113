@@ -64,6 +64,11 @@ if __name__ == '__main__':
     print(ninzu)
     print(example)
 
+    print("\nこれは直接確認することも出来ます。例えば、")
+    printv = lambda x:print(f"{x}と書くと、{eval(x)}という値が得られます。")
+    printv("jikan.label")
+    printv("ninzu.choices")
+
     print("\n11時から2人カルマンフィルタでお願いしてみましょう")
     jikan(11)
     ninzu(2)
