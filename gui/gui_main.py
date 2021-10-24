@@ -162,6 +162,7 @@ string_LINE.pack(anchor=tk.N,side=tk.TOP,)
 
 
 
+
 #選択肢ボタン
 frame_Button=tk.Frame(
     root,
@@ -178,13 +179,71 @@ string_Button_title=tk.Label(
 )
 string_Button_title.grid(row=0,column=0,sticky=tk.N)
 
+#ボタンが押されたときの遷移用関数
+speaking_string=None
+
+#sub_root=None
+
+
+def Button_popup():
+    #global sub_root
+    #global speaking_string
+    #if sub_root == None or not sub_root.winfo_exists():
+    sub_root=tk.Toplevel(root)
+    sub_root.title("文章選択")
+    sub_root.geometry("750x500")
+
+
+    v = tk.IntVar(value=0)
+
+    radio_1 = tk.Radiobutton(
+        sub_root,
+        text="デフォルトの文章１",
+        variable=v,
+        value=1,
+        font=("Helvetica", "25", "bold"),
+    )
+    radio_1.pack()
+
+    radio_2 = tk.Radiobutton(
+        sub_root,
+        text="デフォルトの文章２",
+        variable=v,
+        value=2,
+        font=("Helvetica", "25", "bold"),
+    )
+    radio_2.pack()
+
+    radio_3 = tk.Radiobutton(
+        sub_root,
+        text="デフォルトの文章３",
+        variable=v,
+        value=3,
+        font=("Helvetica", "25", "bold"),
+    )
+    radio_3.pack()
+
+    sub_final_Button=tk.Button(
+        sub_root,
+        text="発声する",
+        font=("Helvetica", "25", "bold"),
+        relief=tk.RAISED,
+        foreground="red",
+        pady=5,
+        command=sub_root.destroy
+    )
+    sub_final_Button.pack()
+    return v
+    
+
 #選択肢(1,1)
 Button_choice_11=tk.Button(
     frame_Button,
     text="人数",
     font=("Helvetica", "25", "bold"),
     relief=tk.RAISED,
-    pady=5
+    pady=5,
+    command=Button_popup()
 )
 Button_choice_11.grid(row=1,column=0,sticky=tk.NSEW)
 
