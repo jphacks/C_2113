@@ -8,6 +8,7 @@ class Button:
         self.choices = choices
     
     def say(self, txt):
+        # 全クラス共通で作っておく
         print(f'[[Button]] {txt}')
 
     def __call__(self, choice): # インスタンスに()を付けて呼び出す
