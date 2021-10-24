@@ -36,17 +36,36 @@ class NinzuuButtonExample(Button):
     def say(self, txt): # override
         print(f'[[人数]] (大きな声で) {txt}')
 
+# 継承クラス
+class ExampleButton(Button):
+    def __init__(self):
+        self.dic = {
+            "可制御性":"すべての極が任意に配置できる性質",
+            "カルマンフィルタ":"確率モデルに基づいた、MMSEの意味で最適なオブザーバ",
+            "線型予測フィルタ":"自己相関係数を用いき過去の入力の線型で予測を行うフィルタ",
+            "ウィーンブリッジ発振回路":"非反転増幅とバンドパスフィルタを組み合わせた発振回路",
+            "レインボーブリッジ":"東京湾にかかる橋"
+        }
+        super().__init__("行列", list(self.dic.keys()))
+
+    def __call__(self, choice):
+        if choice in self.dic:
+            self.say(self.dic[choice]+"でお願いします")
+
 if __name__ == '__main__':
     print("まずはクラスのインスタンスを作ります")
     jikan = JikanButtonExample()
     ninzu = NinzuuButtonExample()
+    example = ExampleButton()
 
     print("\n各クラスの内部変数を確認します")
     print(jikan)
     print(ninzu)
+    print(example)
 
-
-    print("\n2人を11時からでお願いしてみましょう")
+    print("\n11時から2人カルマンフィルタでお願いしてみましょう")
     jikan(11)
     ninzu(2)
+    example("カルマンフィルタ")
+
 
