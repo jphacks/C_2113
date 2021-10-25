@@ -174,7 +174,7 @@ def main(say, buttons):
 
     #ボタンが押されたときの関数
     #発声文章リストを受け取る
-    def speaking_button_popup(dict):
+    def speaking_button_popup(list):
         def inner_func():
         #popup window
             global sub_root
@@ -188,28 +188,31 @@ def main(say, buttons):
 
             radio_0 = tk.Radiobutton(
                 sub_root,
-                text=dict[0],
+                text=list[0],
                 variable=v,
                 value=0,
                 font=("Helvetica", "25", "bold"),
+                foreground="red",
             )
             radio_0.pack()
 
             radio_1 = tk.Radiobutton(
                 sub_root,
-                text=dict[1],
+                text=list[1],
                 variable=v,
                 value=1,
                 font=("Helvetica", "25", "bold"),
+                foreground="red",
             )
             radio_1.pack()            
 
             radio_2 = tk.Radiobutton(
                 sub_root,
-                text=dict[2],
+                text=list[2],
                 variable=v,
                 value=2,
                 font=("Helvetica", "25", "bold"),
+                foreground="red",
             )
             radio_2.pack()
             
@@ -218,7 +221,7 @@ def main(say, buttons):
                     global sub_root
                     global speaking_string
                     sub_root.destroy()
-                    speaking_string.set(dict[v.get()])
+                    speaking_string.set(list[v.get()])
 
                 return inner_destroy
 
@@ -227,7 +230,7 @@ def main(say, buttons):
                 text="発声する",
                 font=("Helvetica", "25", "bold"),
                 relief=tk.RAISED,
-                foreground="red",
+                #foreground="red",
                 pady=5,
                 command=destroy_func(v)
             )
@@ -258,19 +261,19 @@ def main(say, buttons):
         
 
     #選択肢(1,1)
-    dict_11={0:"サンプル文章０",1:"サンプル文章１",2:"サンプル文章２"}
+    list_11=["サンプル文章０","サンプル文章１","サンプル文章２"]
     Button_choice_11=tk.Button(
         frame_Button,
         text="人数",
         font=("Helvetica", "25", "bold"),
         relief=tk.RAISED,
         pady=5,
-        command=speaking_button_popup(dict_11)
+        command=speaking_button_popup(list_11)
     )
     Button_choice_11.grid(row=1,column=0,sticky=tk.NSEW)
 
 
-    dict_21={0:"サンプル文章０",1:"サンプル文章１",2:"サンプル文章２"}
+    list_21=["サンプル文章０","サンプル文章１","サンプル文章２"]
     #選択肢(2,1)
     Button_choice_21=tk.Button(
         frame_Button,
@@ -278,7 +281,7 @@ def main(say, buttons):
         font=("Helvetica", "25", "bold"),
         relief=tk.RAISED,
         pady=5,
-        command=speaking_button_popup(dict_21)
+        command=speaking_button_popup(list_21)
     )
     Button_choice_21.grid(row=2,column=0,sticky=tk.NSEW)
 
