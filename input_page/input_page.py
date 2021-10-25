@@ -8,22 +8,29 @@ from tkinter.constants import N
 #入力データいれ
 class input_data():
     def __init__(self,a,b,c,d,e):
-        self.name = a
-        self.number = b
-        self.children = c
-        self.ponta = d
-        self.dugong = e
+        self.dict={}
+        self.dict["name"] = a
+        self.dict["number"] = b
+        self.dict["children"] = c
+        self.dict["ponta"] = d
+        self.dict["dugong"] = e
         self.check()
+        self.data=self.dict.copy()#dictに無限追加を避ける
+        self.reset()#dictに無限追加を避ける
+
+    def reset(self):
+        self.dict = {}
 
     #無効な入力を弾く(ただデモではいらないなと思ったので後で)
     def check(self):
-        name = self.name
-        number = self.number
-        children = self.children
-        ponta = self.ponta
-        dugong = self.dugong
+        name = self.dict["name"]
+        number = self.dict["number"]
+        children = self.dict["children"]
+        ponta = self.dict["ponta"]
+        dugong = self.dict["dugong"]
         if int(number)>100 or int(number)<0:
             print("無効な入力です!!")
+            self.dict={}
         else:
             print("正しい入力です。")
 
@@ -33,6 +40,8 @@ class Application(tk.Frame):
         self.frame = master
         self.frame.title(u"input")
         self.frame.geometry("1500x750")
+        self.data={}
+
         #タイトル(mainと同一にする)
         string_title = tk.Label(
             text=u"rityo_math（プロダクト名）", 
@@ -69,9 +78,6 @@ class Application(tk.Frame):
         string_explain.pack(anchor=tk.N,side=tk.BOTTOM)
 
     def create_weget(self):
-        # ウィジェット変数を生成
-        #self.sv = tk.StringVar()
-        #self.sv.set("")
 
         #氏名
         self.Static1 = tk.Label(text=u'氏名',font = ("Helvetica", "20"))
@@ -109,9 +115,8 @@ class Application(tk.Frame):
         self.Button.pack()
 
 
-
     def decision(self,event):
-        self.Send_data(event)
+        data=self.Send_data(event)
         self.close_window(event)
 
     #window閉じる関数
@@ -125,11 +130,11 @@ class Application(tk.Frame):
         value_children_num = self.EditBox3.get()
         value_ponta = self.EditBox4.get()
         value_dugong = self.EditBox5.get()
-        data=input_data(value_name,value_num,value_children_num,value_ponta,value_dugong)
+        ip_data=input_data(value_name,value_num,value_children_num,value_ponta,value_dugong)
         #debug
-        print(data.name)
-        print(data.number)
-        print(data.dugong)
+        print(ip_data.data["name"])
+        print(ip_data.data["number"])
+        print(ip_data.data["dugong"])
         #
         self.EditBox1.delete(0,tk.END)
         self.EditBox2.delete(0,tk.END)
@@ -137,19 +142,15 @@ class Application(tk.Frame):
         self.EditBox4.delete(0,tk.END)
         self.EditBox5.delete(0,tk.END)
         #
-        return data
+        self.data=ip_data.data
 
-#リターンで値を返せば良い
-#決定ボタンで閉じるように#まあdone
-#実行タイミングを制御できるように
-
-# 適当に継承する
-# import ButtonData
 def main():
     root = tk.Tk()
     app = Application(master=root)
+    #print(app.data)
+    if app.data!={}:
+        return app.data
     app.mainloop()
-
 
 if __name__ == '__main__': # このファイルが他のファイルから直接呼ばれたときだけ以下を呼ぶ
     # mainを呼ぶ
