@@ -663,11 +663,10 @@ def main(say, buttons):
     # ここに処理を書く
 
 
-if __name__ == '__main__': # このファイルが他のファイルから直接呼ばれたときだけ以下を呼ぶ
-    # 18個のボタンを作る
-    buttons = [button_data.JikanButtonExample()]
-    buttons += [button_data.NinzuuButtonExample()]
-    buttons += [button_data.ExampleButton() for i in range(16)]
+if __name__ == '__main__': # このファイルが直接呼ばれたときだけ以下を呼ぶ
+    buttons = []
+    for i in range(18):
+        buttons.append(["人数", [f'{i}人でお願いします' for i in range(18)]])
         
     # mainを呼ぶ
     main(lambda x:f'[[say]] {x}', buttons)
