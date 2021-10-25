@@ -8,7 +8,7 @@ from typing import List
 @dataclass
 class InputForm:
     label: str
-    input_type: type
+    input_type: type    # int,strの値を取る
 
 #入力データいれ
 class input_data():
