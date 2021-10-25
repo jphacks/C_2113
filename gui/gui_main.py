@@ -12,6 +12,11 @@ class ButtonData:
     label: str
     choices: List[str]
 
+@dataclass
+class SpeakingData:
+    txt: str
+    sec: float
+
 def main(tts_queue, buttons, speaking_queue=None, listening_queue=None): 
 
     #root の設定（サイズは1500x750）
@@ -673,7 +678,9 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
             while True:
                 try:
                     # [str, float[sec]]
-                    txt,speak_time = q.get(timeout=100.0)
+                    data = q.get(timeout=100.0)
+                    txt= data.txt
+                    speak_time = data.sec
                     n = len(txt)
                     for i in range(1, n+1):
                         speaking_string.set(txt[:i])

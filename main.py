@@ -27,7 +27,7 @@ if __name__ == '__main__':
             if (i%2)==0:
                 listen.put(comment[0])
             else:
-                speak.put(comment)
+                speak.put(gui.SpeakingData(txt=comment[0], sec=comment[1]))
             time.sleep(comment[1])
         print("[[TESTER]] test function end.")
 
