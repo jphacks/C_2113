@@ -1,8 +1,6 @@
-# ignore all
-*
+# ignore
+## ignore soundfiles
+*.wav
+*.mp3
 
-# allow them
-!.gitignore
-!*/
-!*.py
-!tts/text.txt
+# allow
