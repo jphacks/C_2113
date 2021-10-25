@@ -28,7 +28,19 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     global speaking_string
     speaking_string=tk.StringVar(value="デフォルト")
     listening_string=tk.StringVar(value="デフォルト")
-        
+    
+    # lineに保存する文面の管理
+    line_text = [{"mode": None, "text": tk.StringVar(value="")} for _ in range(15)]
+    # line_textに新しい文面が追加されたときの処理
+    def line_text_push(mode, text):
+        c = 14
+        while line_text[c]["mode"] is None and c > 0:
+            c -= 1
+        for i in range(c):
+            line_text[i]["mode"] = line_text[i+1]["mode"]
+            line_text[i]["text"].set(line_text[i+1].get())
+        line_text[c]["mode"] = mode
+        line_text[c]["text"].set(text)
 
     #プロダクトタイトル
     frame_title=tk.Frame(
@@ -169,10 +181,10 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     )
     frame_LINE.grid(row=2,column=0,columnspan=2,rowspan=3,sticky=tk.NSEW)
 
-    #LINE表示用
+    """#LINE表示用
     string_LINE= tk.Label(
         frame_LINE,
-        text=u"（ここにLINEが入る） 1 \n 2 \n 3 \n 4 \n 5 \n 6 \n 7 \n 8 \n 9 \n 10 \n 11 \n 12 \n 13 \n 14 \n 15", 
+        text=u"1 \n 2 \n 3 \n 4 \n 5 \n 6 \n 7 \n 8 \n 9 \n 10 \n 11 \n 12 \n 13 \n 14 \n 15", 
         foreground='#000000', 
         background="#ffffff",
         font=("Helvetica", "25", "bold"),
@@ -180,9 +192,20 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         width=30
     )
 
-    string_LINE.pack(anchor=tk.N,side=tk.TOP,)
+    string_LINE.pack(anchor=tk.N,side=tk.TOP,)"""
 
+    string_LINE = [tk.Label(
+        frame_LINE,
+        text=line_text[i]["text"], 
+        foreground='#000000', 
+        background="#ffffff",
+        font=("Helvetica", "25", "bold"),
+        height=15,          
+        width=30
+    ) for i in range(15)]
 
+    for i in range(15):
+        string_LINE[i].pack()
 
     #ボタンが押されたときの関数
     #発声文章リストを受け取る
@@ -234,6 +257,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
                     sub_root.destroy()
                     speak_txt = dict[v.get()]
                     tts_q.put(speak_txt)
+                    line_text_push("speaker", speak_txt)
                     speaking_string.set(speak_txt)
 
                 return lambda:inner_destroy(tts_q)
@@ -498,6 +522,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
             global speaking_string
             nonlocal temp_v
             sub_root.destroy()
+            line_text_push("speaker", temp_v.get())
             speaking_string.set(temp_v.get())
             
         
@@ -534,6 +559,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
 
     def speaking_Button_quick(text):
         def inner_speaking_Button_quick():
+            line_text_push("speaker", text)
             speaking_string.set(text)
         return inner_speaking_Button_quick
 
@@ -683,6 +709,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
                     speak_time = data.sec
                     n = len(txt)
                     for i in range(1, n+1):
+                        line_text_push("speaker", txt[:i])
                         speaking_string.set(txt[:i])
                         time.sleep(speak_time / n)
                 except Empty:
@@ -699,6 +726,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
                     txt = q.get(timeout=100.0)
                     n = len(txt)
                     for i in range(1, n+1):
+                        line_text_push("listen", txt[:i])
                         listening_string.set(txt[:i])
                         time.sleep(1.0 / n)
                 except Empty:
