@@ -1,4 +1,5 @@
 from gui.gui_main import main as gui_main
+from gui.button_data import ButtonData
 import queue
 from threading import Thread
 import time
@@ -6,7 +7,8 @@ import time
 if __name__ == '__main__':
     buttons = []
     for i in range(18):
-        buttons.append(["人数", [f'{i}人でお願いします' for i in range(18)]])
+        buttons.append(ButtonData("人数", [f'{i}人でお願いします' for i in range(18)]))
+
         
     speak = queue.Queue()
     listen = queue.Queue()

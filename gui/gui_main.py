@@ -6,6 +6,7 @@ import typing
 from threading import Thread
 import time
 import queue
+from button_data import ButtonData
 
 def main(tts_queue, buttons, speaking_queue=None, listening_queue=None): 
 
@@ -701,7 +702,8 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
 if __name__ == '__main__': # このファイルが直接呼ばれたときだけ以下を呼ぶ
     buttons = []
     for i in range(18):
-        buttons.append(["人数", [f'{i}人でお願いします' for i in range(18)]])
+        buttons.append(ButtonData("人数", [f'{i}人でお願いします' for i in range(18)]))
+
         
     tts_que = queue.Queue()
     def tts_mock(q):
