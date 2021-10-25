@@ -21,7 +21,7 @@ class input_data():
     def reset(self):
         self.dict = {}
 
-    #無効な入力を弾く(ただデモではいらないなと思ったので後で)
+    #無効な入力に対しWARNINGを出す
     def check(self):
         name = self.dict["name"]
         number = self.dict["number"]
@@ -33,6 +33,14 @@ class input_data():
             self.dict={}
         else:
             print("正しい入力です。")
+
+    def __repr__(self):
+        ret = "= input data ="
+        ret += "\n".join([f"  {key}: {self.data[key]}" for key in self.data.keys()])
+        return ret
+
+    def __call__(self):
+        return self.data
 
 class Application(tk.Frame):
     def __init__(self, master=None):
@@ -132,9 +140,7 @@ class Application(tk.Frame):
         value_dugong = self.EditBox5.get()
         ip_data=input_data(value_name,value_num,value_children_num,value_ponta,value_dugong)
         #debug
-        print(ip_data.data["name"])
-        print(ip_data.data["number"])
-        print(ip_data.data["dugong"])
+        print(ip_data)
         #
         self.EditBox1.delete(0,tk.END)
         self.EditBox2.delete(0,tk.END)
@@ -142,16 +148,16 @@ class Application(tk.Frame):
         self.EditBox4.delete(0,tk.END)
         self.EditBox5.delete(0,tk.END)
         #
-        self.data=ip_data.data
+        self.data=ip_data()
 
 def main():
     root = tk.Tk()
     app = Application(master=root)
-    #print(app.data)
-    if app.data!={}:
-        return app.data
     app.mainloop()
+    return app.data
 
-if __name__ == '__main__': # このファイルが他のファイルから直接呼ばれたときだけ以下を呼ぶ
-    # mainを呼ぶ
-    main()
+if __name__ == '__main__': # このファイルが直接呼ばれたときだけ以下を呼ぶ
+    ret = main()
+    print(ret)
+
+
