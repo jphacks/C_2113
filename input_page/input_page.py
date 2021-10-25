@@ -1,9 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
-import sys
 import tkinter as tk
 from tkinter.constants import N
+from dataclasses import dataclass
+from typing import List
 
+@dataclass
+class InputForm:
+    label: str
+    input_type: type
 
 #入力データいれ
 class input_data():
@@ -43,7 +48,7 @@ class input_data():
         return self.data
 
 class Application(tk.Frame):
-    def __init__(self, master=None):
+    def __init__(self, master, input_form_list: List[InputForm]):
         super().__init__(master)
         self.frame = master
         self.frame.title(u"input")
@@ -72,7 +77,7 @@ class Application(tk.Frame):
         )
         string_directions.pack(anchor=tk.N,side=tk.TOP)
 
-        self.create_weget()
+        self.create_weget(input_form_list)
 
         #オマケ
         string_explain = tk.Label(
@@ -85,10 +90,16 @@ class Application(tk.Frame):
         )
         string_explain.pack(anchor=tk.N,side=tk.BOTTOM)
 
-    def create_weget(self):
+    def create_weget(self, input_form_list):
+        # (参考)
+        # for input_form in input_form_list:
+        #     if input_form.type is int:
+        #         IntVarの処理
+        #     elif input_form.type is str:
+        #         StringVarの処理
 
         #氏名
-        self.Static1 = tk.Label(text=u'氏名',font = ("Helvetica", "20"))
+        self.Static1 = tk.Label(text='氏名',font = ("Helvetica", "20"))
         self.Static1.pack()
         self.EditBox1 = tk.Entry(width=25,textvariable=tk.StringVar())
         self.EditBox1.pack()
@@ -150,11 +161,17 @@ class Application(tk.Frame):
         #
         self.data=ip_data()
 
-def main():
+def main(input_form_list=None):
+    if input_form_list is None:
+        input_form_list = get_test_input_forms()
     root = tk.Tk()
-    app = Application(master=root)
+    app = Application(master=root, input_form_list=input_form_list)
     app.mainloop()
     return app.data
+
+def get_test_input_forms():
+    return [InputForm("名前",str), InputForm("コース名",str), InputForm("人数",int), InputForm("子供の人数",int),
+            InputForm("狸の匹数",int), InputForm("ジュゴン",int)]
 
 if __name__ == '__main__': # このファイルが直接呼ばれたときだけ以下を呼ぶ
     ret = main()
