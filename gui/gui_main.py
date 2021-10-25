@@ -1,12 +1,16 @@
 # -*- coding:utf-8 -*-
 import sys
 import tkinter as tk
-from typing import Dict
-import typing
+from dataclasses import dataclass
+from typing import Dict, List
 from threading import Thread
 import time
 import queue
-from button_data import ButtonData
+
+@dataclass
+class ButtonData:
+    label: str
+    choices: List[str]
 
 def main(tts_queue, buttons, speaking_queue=None, listening_queue=None): 
 
