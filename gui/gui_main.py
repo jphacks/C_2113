@@ -5,8 +5,9 @@ from typing import Dict
 import typing
 from threading import Thread
 import time
+import queue
 
-def main(say, buttons, speaking_queue=None, listening_queue=None): 
+def main(tts_queue, buttons, speaking_queue=None, listening_queue=None): 
 
     #root の設定（サイズは1500x750）
     root = tk.Tk()
@@ -175,11 +176,13 @@ def main(say, buttons, speaking_queue=None, listening_queue=None):
 
     #ボタンが押されたときの関数
     #発声文章リストを受け取る
-    def speaking_button_popup(dict):
-        def inner_func():
+    #tts_qのところはデフォルト引数のままでいい
+    def speaking_button_popup(dict, tts_q=tts_queue):
+        def inner_func(tts_q):
         #popup window
             global sub_root
             global speaking_string
+            global tts_queue
             sub_root=tk.Toplevel(root)
             sub_root.title("文章選択")
             sub_root.geometry("750x500")
@@ -214,14 +217,16 @@ def main(say, buttons, speaking_queue=None, listening_queue=None):
             )
             radio_2.pack()
             
-            def destroy_func(v):
-                def inner_destroy():
+            def destroy_func(v, tts_q):
+                def inner_destroy(tts_q):
                     global sub_root
                     global speaking_string
                     sub_root.destroy()
-                    speaking_string.set(dict[v.get()])
+                    speak_txt = dict[v.get()]
+                    tts_q.put(speak_txt)
+                    speaking_string.set(speak_txt)
 
-                return inner_destroy
+                return lambda:inner_destroy(tts_q)
 
             sub_final_Button=tk.Button(
                 sub_root,
@@ -230,11 +235,11 @@ def main(say, buttons, speaking_queue=None, listening_queue=None):
                 relief=tk.RAISED,
                 foreground="red",
                 pady=5,
-                command=destroy_func(v)
+                command=destroy_func(v, tts_q)
             )
             sub_final_Button.pack()
 
-        return inner_func
+        return lambda:inner_func(tts_q)
 
 
 
@@ -698,8 +703,18 @@ if __name__ == '__main__': # このファイルが直接呼ばれたときだけ
     for i in range(18):
         buttons.append(["人数", [f'{i}人でお願いします' for i in range(18)]])
         
-    # mainを呼ぶ
-    root = main(lambda x:f'[[say]] {x}', buttons)
+    tts_que = queue.Queue()
+    def tts_mock(q):
+        while True:
+            if q.empty():
+                time.sleep(0.1)
+                continue
+            txt = q.get()
+            print(f'[[TTS]] {txt}')
+    tts_thread = Thread(target=lambda:tts_mock(tts_que))
+    tts_thread.start()
+
+    root = main(tts_que, buttons)
     root.mainloop()
     
 
