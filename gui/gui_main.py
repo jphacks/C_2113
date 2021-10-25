@@ -3,9 +3,10 @@ import sys
 import tkinter as tk
 from typing import Dict
 import typing
-from interface import button_data
+from threading import Thread
+import time
 
-def main(say, buttons): 
+def main(say, buttons, speaking_queue=None, listening_queue=None): 
 
     #root の設定（サイズは1500x750）
     root = tk.Tk()
@@ -656,11 +657,40 @@ def main(say, buttons):
     )
     string_explain.pack(anchor=tk.N,side=tk.TOP)
 
+    if speaking_queue is not None:
+        # Queueを介して喋る内容を受け取る
+        def speaking_watcher(q):
+            while True:
+                if q.empty():
+                    time.sleep(0.1)
+                    continue
+                # [str, float[sec]]
+                txt,speak_time = q.get()
+                n = len(txt)
+                for i in range(1, n+1):
+                    speaking_string.set(txt[:i])
+                    time.sleep(speak_time / n)
+        
+        speaking_thread = Thread(target=lambda:speaking_watcher(speaking_queue))
+        speaking_thread.start()
 
+    if listening_queue is not None:
+        # Queueを介して認識内容を受け取る
+        def listening_watcher(q):
+            while True:
+                if q.empty():
+                    time.sleep(0.1)
+                    continue
+                txt = q.get()
+                n = len(txt)
+                for i in range(1, n+1):
+                    listening_string.set(txt[:i])
+                    time.sleep(1.0 / n)
+        
+        listening_thread = Thread(target=lambda:listening_watcher(listening_queue))
+        listening_thread.start()
 
-    root.mainloop()
-
-    # ここに処理を書く
+    return root
 
 
 if __name__ == '__main__': # このファイルが直接呼ばれたときだけ以下を呼ぶ
@@ -669,5 +699,7 @@ if __name__ == '__main__': # このファイルが直接呼ばれたときだけ
         buttons.append(["人数", [f'{i}人でお願いします' for i in range(18)]])
         
     # mainを呼ぶ
-    main(lambda x:f'[[say]] {x}', buttons)
+    root = main(lambda x:f'[[say]] {x}', buttons)
+    root.mainloop()
+    
 
