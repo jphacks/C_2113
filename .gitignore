@@ -3,4 +3,7 @@
 *.wav
 *.mp3
 
+## ignore auto-created files
+__pycache__/*
+
 # allow
