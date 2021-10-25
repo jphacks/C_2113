@@ -5,6 +5,7 @@ import urllib.request
 import json
 import subprocess as sp
 from playsound import playsound
+import queue
 
 # copy from https://qiita.com/to_obara/items/d8d5c92c2ea85a197e2d
 
@@ -60,9 +61,9 @@ def output_mp3(dat: dict, ofile: str) -> None:
     """
 	b64str = dat["audioContent"]
 	binary = base64.b64decode(b64str)
-	dat = np.frombuffer(binary, dtype=np.uint8)
+	uint8_dat = np.frombuffer(binary, dtype=np.uint8)
 	with open(ofile, "wb") as f:
-		f.write(dat)
+		f.write(uint8_dat)
 
 
 def gtts(txt: str, ofile: str) -> None:
@@ -96,4 +97,4 @@ def gtts(txt: str, ofile: str) -> None:
 def tts_and_speak(txt: str, id: int) -> None:
 	ofile = "tts" + str(id) + ".mp3"
 	gtts(txt, ofile)
-	playsound(ofile)
+

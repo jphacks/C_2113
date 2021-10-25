@@ -60,9 +60,9 @@ def output_mp3(dat: dict, ofile: str) -> None:
     """
 	b64str = dat["audioContent"]
 	binary = base64.b64decode(b64str)
-	dat = np.frombuffer(binary, dtype=np.uint8)
+	uint8_dat = np.frombuffer(binary, dtype=np.uint8)
 	with open(ofile, "wb") as f:
-		f.write(dat)
+		f.write(uint8_dat)
 
 
 def gtts(txt: str, ofile: str) -> None:
