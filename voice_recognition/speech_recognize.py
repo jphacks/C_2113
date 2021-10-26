@@ -14,7 +14,7 @@ def main(q):
                 audio = r.listen(source)
             
             result = r.recognize_google(audio, language='ja-JP')
-            print("[[voice recognition]]", result)
+            print("[[VOICE RECOGNITION]]", result)
             q.put(result)
 
         # 以下は認識できなかったときに止まらないように。

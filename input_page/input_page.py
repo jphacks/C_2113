@@ -128,7 +128,7 @@ class Application(tk.Frame):
             value_dict[key]=value
         ip_data=input_data(value_dict)
         #debug
-        print(ip_data)
+        print("[[INPUT_PAGE]]",ip_data)
         #
         for key in self.EditBox_dict:
             self.EditBox_dict[key].delete(0,tk.END)
