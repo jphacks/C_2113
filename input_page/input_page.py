@@ -37,7 +37,7 @@ class input_data():
     '''
 
     def __repr__(self):
-        ret = "= input data ="
+        ret = "= input data =\n"
         ret += "\n".join([f"  {key}: {self.data[key]}" for key in self.data.keys()])
         return ret
 
@@ -149,6 +149,6 @@ def get_test_input_forms():
 
 if __name__ == '__main__': # このファイルが直接呼ばれたときだけ以下を呼ぶ
     ret = main()
-    print(ret)
+    print("ret:", ret)
 
 
