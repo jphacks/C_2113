@@ -30,7 +30,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     listening_string=tk.StringVar(value="デフォルト")
     
     # lineに保存する文面の管理
-    line_text = [{"mode": None, "text": tk.StringVar(value="")} for _ in range(15)]
+    line_text = [{"mode": None, "text": tk.StringVar(value=f"string{_}")} for _ in range(15)]
     # line_textに新しい文面が追加されたときの処理
     def line_text_push(mode, text):
         c = 14
@@ -196,11 +196,11 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
 
     string_LINE = [tk.Label(
         frame_LINE,
-        text=line_text[i]["text"], 
+        textvariable=line_text[i]["text"], 
         foreground='#000000', 
         background="#ffffff",
         font=("Helvetica", "25", "bold"),
-        height=15,          
+        height=1,          
         width=30
     ) for i in range(15)]
 
