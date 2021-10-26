@@ -14,6 +14,7 @@ Requirements:
   - base64
   - urllib
 - Google Cloud Platform のアカウントと、その鍵ファイル
+- gcloud コマンドのインストール ([参考](https://cloud.google.com/sdk/docs/install?hl=JA#deb))
 
 Files
 
