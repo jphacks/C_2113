@@ -30,17 +30,18 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     listening_string=tk.StringVar(value="デフォルト")
     
     # lineに保存する文面の管理
-    line_text = [{"mode": None, "text": tk.StringVar(value=f"string{_}")} for _ in range(15)]
+    line_text = [{"mode": None, "text": tk.StringVar(value="")} for _ in range(15)]
     # line_textに新しい文面が追加されたときの処理
     def line_text_push(mode, text):
-        c = 14
-        while line_text[c]["mode"] is None and c > 0:
-            c -= 1
-        for i in range(c):
-            line_text[i]["mode"] = line_text[i+1]["mode"]
-            line_text[i]["text"].set(line_text[i+1].get())
-        line_text[c]["mode"] = mode
-        line_text[c]["text"].set(text)
+        isFull = (line_text[-1]["mode"] is not None)
+        for i in range(15):
+            if line_text[i]["mode"] is None or i == 14:
+                line_text[i]["mode"] = mode
+                line_text[i]["text"].set(text)
+                return
+            elif isFull:
+                line_text[i]["mode"] = line_text[i+1]["mode"]
+                line_text[i]["text"].set(line_text[i+1]["text"].get())
 
     #プロダクトタイトル
     frame_title=tk.Frame(
