@@ -1,11 +1,23 @@
 # -*- coding:utf-8 -*-
 import sys
 import tkinter as tk
-from typing import Dict
-import typing
-from interface import button_data
+from dataclasses import dataclass
+from typing import Dict, List
+from threading import Thread
+import time
+from queue import Queue, Empty
 
-def main(say, buttons): 
+@dataclass
+class ButtonData:
+    label: str
+    choices: List[str]
+
+@dataclass
+class SpeakingData:
+    txt: str
+    sec: float
+
+def main(tts_queue, buttons, speaking_queue=None, listening_queue=None): 
 
     #root の設定（サイズは1500x750）
     root = tk.Tk()
@@ -174,11 +186,13 @@ def main(say, buttons):
 
     #ボタンが押されたときの関数
     #発声文章リストを受け取る
-    def speaking_button_popup(list):
-        def inner_func():
+    #tts_qのところはデフォルト引数のままでいい
+    def speaking_button_popup(dict, tts_q=tts_queue):
+        def inner_func(tts_q):
         #popup window
             global sub_root
             global speaking_string
+            global tts_queue
             sub_root=tk.Toplevel(root)
             sub_root.title("文章選択")
             sub_root.geometry("750x500")
@@ -216,14 +230,16 @@ def main(say, buttons):
             )
             radio_2.pack()
             
-            def destroy_func(v):
-                def inner_destroy():
+            def destroy_func(v, tts_q):
+                def inner_destroy(tts_q):
                     global sub_root
                     global speaking_string
                     sub_root.destroy()
-                    speaking_string.set(list[v.get()])
+                    speak_txt = dict[v.get()]
+                    tts_q.put(speak_txt)
+                    speaking_string.set(speak_txt)
 
-                return inner_destroy
+                return lambda:inner_destroy(tts_q)
 
             sub_final_Button=tk.Button(
                 sub_root,
@@ -232,11 +248,11 @@ def main(say, buttons):
                 relief=tk.RAISED,
                 #foreground="red",
                 pady=5,
-                command=destroy_func(v)
+                command=destroy_func(v, tts_q)
             )
             sub_final_Button.pack()
 
-        return inner_func
+        return lambda:inner_func(tts_q)
 
 
 
@@ -659,18 +675,62 @@ def main(say, buttons):
     )
     string_explain.pack(anchor=tk.N,side=tk.TOP)
 
+    if speaking_queue is not None:
+        # Queueを介して喋る内容を受け取る
+        def speaking_watcher(q):
+            while True:
+                try:
+                    # [str, float[sec]]
+                    data = q.get(timeout=100.0)
+                    txt= data.txt
+                    speak_time = data.sec
+                    n = len(txt)
+                    for i in range(1, n+1):
+                        speaking_string.set(txt[:i])
+                        time.sleep(speak_time / n)
+                except Empty:
+                    continue
 
+        speaking_thread = Thread(target=lambda:speaking_watcher(speaking_queue))
+        speaking_thread.start()
 
-    root.mainloop()
+    if listening_queue is not None:
+        # Queueを介して認識内容を受け取る
+        def listening_watcher(q):
+            while True:
+                try:
+                    txt = q.get(timeout=100.0)
+                    n = len(txt)
+                    for i in range(1, n+1):
+                        listening_string.set(txt[:i])
+                        time.sleep(1.0 / n)
+                except Empty:
+                    continue
 
-    # ここに処理を書く
+        listening_thread = Thread(target=lambda:listening_watcher(listening_queue))
+        listening_thread.start()
+
+    return root
 
 
 if __name__ == '__main__': # このファイルが直接呼ばれたときだけ以下を呼ぶ
     buttons = []
     for i in range(18):
-        buttons.append(["人数", [f'{i}人でお願いします' for i in range(18)]])
+        buttons.append(ButtonData("人数", [f'{i}人でお願いします' for i in range(18)]))
+
         
-    # mainを呼ぶ
-    main(lambda x:f'[[say]] {x}', buttons)
+    tts_que = Queue()
+    def tts_mock(q):
+        while True:
+            if q.empty():
+                time.sleep(0.1)
+                continue
+            txt = q.get()
+            print(f'[[TTS]] {txt}')
+    tts_thread = Thread(target=lambda:tts_mock(tts_que))
+    tts_thread.start()
+
+    root = main(tts_que, buttons)
+    root.mainloop()
+    
 
