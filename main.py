@@ -1,9 +1,38 @@
-import gui
 import queue
 from threading import Thread
 import time
 
-if __name__ == '__main__':
+import gui
+import voice_recognition
+import input_page
+
+def main():
+    # 入力画面
+    #  入力内容リスト(List[InputForm])を作ると良い
+    input_data = input_page.main()
+
+    # Button Dataの作成
+    buttons = []
+    for i in range(18):
+        buttons.append(gui.ButtonData("人数", [f'{i}人でお願いします' for i in range(18)]))
+
+    # 共有変数の作成
+    speak = queue.Queue()
+    listen = queue.Queue()
+
+    # 音声認識の呼び出し
+    vrec_thread = Thread(target=lambda:voice_recognition.main(listen))
+    vrec_thread.start()
+
+    # ttsの関数
+    tts = print     # TODO
+
+    # メイン画面の呼び出し
+    root = gui.main(tts, buttons, speak, listen)
+    root.mainloop() # ここで待機
+
+
+def test_gui_integration():
     buttons = []
     for i in range(18):
         buttons.append(gui.ButtonData("人数", [f'{i}人でお願いします' for i in range(18)]))
@@ -36,3 +65,5 @@ if __name__ == '__main__':
 
     root.mainloop()
 
+if __name__ == '__main__':
+   main() 
