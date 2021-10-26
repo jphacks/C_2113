@@ -15,6 +15,12 @@ def main():
     add("人数", int)
     add("コース名", str)
     add("何時から", int)
+    add("持ち帰り", str)
+    add("日付(月)", int)
+    add("日付(日)", int)
+    add("記念日", str)
+    add("支払いカード", str)
+    add("ポイント", str)
     input_data = input_page.main(input_list)
 
     # Button Dataの作成
@@ -32,6 +38,22 @@ def main():
     ## 時間
     jikan = input_data["何時から"]
     add("時間", [f"{jikan}時からでお願いします", f"{jikan}時からでいけますか？", f"{jikan}時からで大丈夫でしょうか"])
+    ## 持ち帰り
+    take_out = input_data["持ち帰り"]
+    add("持ち帰り", [f"持ち帰りで{take_out}をお願いします。"])
+    ## 日付
+    month = input_data["日付(月)"]
+    date = input_data["日付(日)"]
+    add("日付", [f"{month}月{date}日でお願いします。","{month}月{date}日に予約したいです。"])
+    ## 記念日
+    aniversary = input_data["記念日"]
+    add("誕生日", [f"{month}月{date}日は{aniversary}です。",f"{date}日は{aniversary}です。"])
+    ## クレジットカード
+    pay = input_data["支払いカード"]
+    add("クレジットカード", [f"{pay}は使えますか？",f"{pay}で支払います。"])
+    ## ポイント Go to eat
+    point = input_data["ポイント"]
+    add("ポイント", [f"{point}は使えますか?",f"{point}対象店ですか？",f"{point}は貯まりますか？"])
     ## その他
     add("時間(午前)", [f"{i}時からは空いてますか？" for i in [8,9,10,11,12]])
     add("時間(昼)", [f"{i}時からは空いてますか？" for i in [11,12,13,14,15,16]])
