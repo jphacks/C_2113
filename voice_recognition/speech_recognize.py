@@ -8,12 +8,14 @@ def main(q):
     mic = sr.Microphone()
 
     while True:
-        with mic as source:
-            r.adjust_for_ambient_noise(source) #雑音対策
-            audio = r.listen(source)
-        
         try:
-            q.put(r.recognize_google(audio, language='ja-JP'))
+            with mic as source:
+                r.adjust_for_ambient_noise(source) #雑音対策
+                audio = r.listen(source)
+            
+            result = r.recognize_google(audio, language='ja-JP')
+            print("[[voice recognition]]", result)
+            q.put(result)
 
         # 以下は認識できなかったときに止まらないように。
         except sr.UnknownValueError:
@@ -28,7 +30,7 @@ if __name__ == '__main__':
             if q.empty():
                 time.sleep(0.1)
                 continue
-            print(q.get())
+            print("result:", q.get())
     t = threading.Thread(target=lambda:loop(q))
     t.start()
     main(q)
