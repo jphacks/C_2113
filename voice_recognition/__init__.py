@@ -1,0 +1,1 @@
+from voice_recognition.speech_recognize import main

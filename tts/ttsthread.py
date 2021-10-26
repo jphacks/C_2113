@@ -5,6 +5,7 @@ import urllib.request
 import json
 import subprocess as sp
 from playsound import playsound
+import queue
 
 # copy from https://qiita.com/to_obara/items/d8d5c92c2ea85a197e2d
 
@@ -50,7 +51,7 @@ def makeRequestDict(txt: str) -> dict:
 	return dat
 
 
-def output_mp3(dat: dict, ofile: str) -> None:
+def output_mp3(dat: dict, ofile: str) -> int:
 	"""
     Google Text-To-Speechへリクエストした結果を元に音声データにしてファイルに書き込む
 
@@ -63,9 +64,12 @@ def output_mp3(dat: dict, ofile: str) -> None:
 	uint8_dat = np.frombuffer(binary, dtype=np.uint8)
 	with open(ofile, "wb") as f:
 		f.write(uint8_dat)
+	return len(uint8_dat) / 2 / 24  # playing time in ms. 24,000 Hz with 2 bytes
 
 
-def gtts(txt: str, ofile: str) -> None:
+def gtts(txt: str, ofile: str) -> int:
+
+	# Returns playing time in ms.
 
 	dat = makeRequestDict(txt)
 	req_data = json.dumps(dat).encode()
@@ -85,17 +89,20 @@ def gtts(txt: str, ofile: str) -> None:
 		with urllib.request.urlopen(req) as response:
 			dat = response.read()
 			body = json.loads(dat)
-			output_mp3(body, ofile)
+			ret = output_mp3(body, ofile)
 			print("done..")
+		return ret
 	except urllib.error.URLError as e:
 		print("error happen...")
 		print(e.reason)
 		print(e)
+		return -1
 
 
-if __name__ == "__main__":
-	with open("text.txt", "r") as fin:
-		txt = fin.read()
-	txt = txt[:-1]
-	gtts(txt, "result2.mp3")
-	playsound("result2.mp3")
+def tts_and_speak(txt: str, id: int, output_queue: queue.Queue = None) -> None:
+	ofile = "tts" + str(id) + ".mp3"
+	playtime = gtts(txt, ofile)
+	if (output_queue is not None):
+		output_queue.put(playtime)
+	playsound(ofile)
+
