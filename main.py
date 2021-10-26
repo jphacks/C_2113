@@ -14,7 +14,7 @@ def main():
     add("名前", str)
     add("人数", int)
     add("コース名", str)
-    add("時間", int)
+    add("何時から", int)
     input_data = input_page.main(input_list)
 
     # Button Dataの作成
@@ -30,7 +30,7 @@ def main():
     course = input_data["コース名"]
     add("コース", [f"{course}でお願いします", f"{course}でお願いしたいのですが"]) 
     ## 時間
-    jikan = input_data["時間"]
+    jikan = input_data["何時から"]
     add("時間", [f"{jikan}時からでお願いします", f"{jikan}時からでいけますか？", f"{jikan}時からで大丈夫でしょうか"])
     ## その他
     add("時間(午前)", [f"{i}時からは空いてますか？" for i in [8,9,10,11,12]])
