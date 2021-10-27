@@ -30,18 +30,38 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     listening_string=tk.StringVar(value="デフォルト")
     
     # lineに保存する文面の管理
-    line_text = [{"mode": None, "text": tk.StringVar(value="")} for _ in range(15)]
+    line_text = [{
+        "mode": None, 
+        "text_left": tk.StringVar(value=""), 
+        "text_right": tk.StringVar(value="")
+        } for _ in range(15)]
     # line_textに新しい文面が追加されたときの処理
     def line_text_push(mode, text):
+        from pprint import pprint
+        pprint(line_text)
+        print([(string_LINE_left[i]["width"], string_LINE_right[i]["width"]) for i in range(15)])
         isFull = (line_text[-1]["mode"] is not None)
         for i in range(15):
             if line_text[i]["mode"] is None or i == 14:
-                line_text[i]["mode"] = mode
-                line_text[i]["text"].set(text)
+                _line_text_set(i, mode, text)
                 return
             elif isFull:
-                line_text[i]["mode"] = line_text[i+1]["mode"]
-                line_text[i]["text"].set(line_text[i+1]["text"].get())
+                _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text"].get())
+
+    def _line_text_set(idx, mode, text):
+        line_text[idx]["mode"] = mode
+        if mode == "listen":
+            line_text[idx]["text_left"].set(text)
+            string_LINE_left[idx]["width"] = 26
+            string_LINE_right[idx]["width"] = 4
+            string_LINE_left[idx]["background"] = "#c69c00"
+            string_LINE_right[idx]["background"] = "#ffffff"
+        else:
+            line_text[idx]["text_right"].set(text)
+            string_LINE_left[idx]["width"] = 4
+            string_LINE_right[idx]["width"] = 26
+            string_LINE_left[idx]["background"] = "#ffffff"
+            string_LINE_right[idx]["background"] = "#00b9f3"
 
     #プロダクトタイトル
     frame_title=tk.Frame(
@@ -182,31 +202,28 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     )
     frame_LINE.grid(row=2,column=0,columnspan=2,rowspan=3,sticky=tk.NSEW)
 
-    """#LINE表示用
-    string_LINE= tk.Label(
+    string_LINE_left = [tk.Label(
         frame_LINE,
-        text=u"1 \n 2 \n 3 \n 4 \n 5 \n 6 \n 7 \n 8 \n 9 \n 10 \n 11 \n 12 \n 13 \n 14 \n 15", 
-        foreground='#000000', 
-        background="#ffffff",
-        font=("Helvetica", "25", "bold"),
-        height=15,          
-        width=30
-    )
-
-    string_LINE.pack(anchor=tk.N,side=tk.TOP,)"""
-
-    string_LINE = [tk.Label(
-        frame_LINE,
-        textvariable=line_text[i]["text"], 
+        textvariable=line_text[i]["text_left"], 
         foreground='#000000', 
         background="#ffffff",
         font=("Helvetica", "25", "bold"),
         height=1,          
-        width=30
+        width=26
+    ) for i in range(15)]
+    string_LINE_right = [tk.Label(
+        frame_LINE,
+        textvariable=line_text[i]["text_right"], 
+        foreground='#000000', 
+        background="#ffffff",
+        font=("Helvetica", "25", "bold"),
+        height=1,          
+        width=4
     ) for i in range(15)]
 
     for i in range(15):
-        string_LINE[i].pack()
+        string_LINE_left[i].pack(side=tk.TOP, anchor=tk.W)
+        string_LINE_right[i].pack(side=tk.RIGHT, anchor=tk.N)
 
     #ボタンが押されたときの関数
     #発声文章リストを受け取る
