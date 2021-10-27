@@ -45,21 +45,23 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
             if line_text[i]["mode"] is None or i == 14:
                 _line_text_set(i, mode, text)
                 return
-            elif isFull:
-                _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text"].get())
+            elif isFull and line_text[i+1]["mode"] == "listen":
+                _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_left"].get())
+            elif isFull and line_text[i+1]["mode"] == "speak":
+                _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_right"].get())
 
     def _line_text_set(idx, mode, text):
         line_text[idx]["mode"] = mode
         if mode == "listen":
             line_text[idx]["text_left"].set(text)
-            string_LINE_left[idx]["width"] = 26
-            string_LINE_right[idx]["width"] = 4
+            # string_LINE_left[idx]["width"] = 26
+            # string_LINE_right[idx]["width"] = 4
             string_LINE_left[idx]["background"] = "#c69c00"
             string_LINE_right[idx]["background"] = "#ffffff"
         else:
             line_text[idx]["text_right"].set(text)
-            string_LINE_left[idx]["width"] = 4
-            string_LINE_right[idx]["width"] = 26
+            # string_LINE_left[idx]["width"] = 4
+            # string_LINE_right[idx]["width"] = 26
             string_LINE_left[idx]["background"] = "#ffffff"
             string_LINE_right[idx]["background"] = "#00b9f3"
 
@@ -196,34 +198,44 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
 
     #ログのLINE表示用スペース
 
-    frame_LINE=tk.Frame(
+    frame_LINE_left=tk.Frame(
         root,
         bg="#eef7ed",
     )
-    frame_LINE.grid(row=2,column=0,columnspan=2,rowspan=3,sticky=tk.NSEW)
+    frame_LINE_left.grid(row=2,column=0,columnspan=1,rowspan=3,sticky=tk.NSEW)
+
+    frame_LINE_right=tk.Frame(
+        root,
+        bg="#eef7ed",
+    )
+    frame_LINE_right.grid(row=2,column=1,columnspan=1,rowspan=3,sticky=tk.NSEW)
 
     string_LINE_left = [tk.Label(
-        frame_LINE,
+        frame_LINE_left,
         textvariable=line_text[i]["text_left"], 
         foreground='#000000', 
         background="#ffffff",
-        font=("Helvetica", "25", "bold"),
+        font=("Helvetica", "20", "bold"),
         height=1,          
-        width=26
+        width=15
     ) for i in range(15)]
     string_LINE_right = [tk.Label(
-        frame_LINE,
+        frame_LINE_right,
         textvariable=line_text[i]["text_right"], 
         foreground='#000000', 
         background="#ffffff",
-        font=("Helvetica", "25", "bold"),
+        font=("Helvetica", "20", "bold"),
         height=1,          
-        width=4
+        width=15
     ) for i in range(15)]
 
     for i in range(15):
-        string_LINE_left[i].pack(side=tk.TOP, anchor=tk.W)
-        string_LINE_right[i].pack(side=tk.RIGHT, anchor=tk.N)
+        # string_LINE_left[i].pack(side=tk.TOP, anchor=tk.W)
+        # string_LINE_right[i].pack(side=tk.RIGHT, anchor=tk.N)
+        # string_LINE_left[i].grid(row=i+2,column=0)
+        # string_LINE_left[i].grid(row=i+2,column=2)
+        string_LINE_left[i].pack()
+        string_LINE_right[i].pack()
 
     #ボタンが押されたときの関数
     #発声文章リストを受け取る
@@ -275,7 +287,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
                     sub_root.destroy()
                     speak_txt = dict[v.get()]
                     tts_q.put(speak_txt)
-                    line_text_push("speaker", speak_txt)
+                    line_text_push("speak", speak_txt)
                     speaking_string.set(speak_txt)
 
                 return lambda:inner_destroy(tts_q)
@@ -540,7 +552,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
             global speaking_string
             nonlocal temp_v
             sub_root.destroy()
-            line_text_push("speaker", temp_v.get())
+            line_text_push("speak", temp_v.get())
             speaking_string.set(temp_v.get())
             
         
@@ -577,7 +589,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
 
     def speaking_Button_quick(text):
         def inner_speaking_Button_quick():
-            line_text_push("speaker", text)
+            line_text_push("speak", text)
             speaking_string.set(text)
         return inner_speaking_Button_quick
 
@@ -727,7 +739,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
                     speak_time = data.sec
                     n = len(txt)
                     for i in range(1, n+1):
-                        line_text_push("speaker", txt[:i])
+                        line_text_push("speak", txt[:i])
                         speaking_string.set(txt[:i])
                         time.sleep(speak_time / n)
                 except Empty:
