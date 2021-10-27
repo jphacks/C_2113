@@ -37,9 +37,6 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         } for _ in range(15)]
     # line_textに新しい文面が追加されたときの処理
     def line_text_push(mode, text):
-        from pprint import pprint
-        pprint(line_text)
-        print([(string_LINE_left[i]["width"], string_LINE_right[i]["width"]) for i in range(15)])
         isFull = (line_text[-1]["mode"] is not None)
         for i in range(15):
             if line_text[i]["mode"] is None or i == 14:
@@ -54,16 +51,24 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         line_text[idx]["mode"] = mode
         if mode == "listen":
             line_text[idx]["text_left"].set(text)
-            # string_LINE_left[idx]["width"] = 26
-            # string_LINE_right[idx]["width"] = 4
-            string_LINE_left[idx]["background"] = "#c69c00"
+            string_LINE_left[idx]["background"] = "#afecb9"
+            string_LINE_left[idx]["width"] = 30
+            string_LINE_left[idx].grid_forget()
+            string_LINE_left[idx].grid(row=idx, column=0, columnspan=5)
             string_LINE_right[idx]["background"] = "#ffffff"
+            string_LINE_right[idx]["width"] = 6
+            string_LINE_right[idx].grid_forget()
+            string_LINE_right[idx].grid(row=idx, column=5)
         else:
             line_text[idx]["text_right"].set(text)
-            # string_LINE_left[idx]["width"] = 4
-            # string_LINE_right[idx]["width"] = 26
             string_LINE_left[idx]["background"] = "#ffffff"
-            string_LINE_right[idx]["background"] = "#00b9f3"
+            string_LINE_left[idx]["width"] = 6
+            string_LINE_left[idx].grid_forget()
+            string_LINE_left[idx].grid(row=idx, column=0)
+            string_LINE_right[idx]["background"] = "#86d792"
+            string_LINE_right[idx]["width"] = 30
+            string_LINE_right[idx].grid_forget()
+            string_LINE_right[idx].grid(row=idx, column=1, columnspan=5)
 
     #プロダクトタイトル
     frame_title=tk.Frame(
@@ -198,45 +203,35 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
 
     #ログのLINE表示用スペース
 
-    frame_LINE_left=tk.Frame(
+    frame_LINE=tk.Frame(
         root,
         bg="#eef7ed",
     )
-    frame_LINE_left.grid(row=2,column=0,columnspan=2,rowspan=3,sticky=tk.NSEW)
-
-    """frame_LINE_right=tk.Frame(
-        root,
-        bg="#eef7ed",
-    )
-    frame_LINE_right.grid(row=2,column=1,columnspan=1,rowspan=3,sticky=tk.NSEW)"""
+    frame_LINE.grid(row=2,column=0,columnspan=2,rowspan=3,sticky=tk.NSEW)
 
     string_LINE_left = [tk.Label(
-        frame_LINE_left,
+        frame_LINE,
         textvariable=line_text[i]["text_left"], 
         foreground='#000000', 
         background="#ffffff",
         font=("Helvetica", "20", "bold"),
         height=1,          
-        width=20
+        width=30
     ) for i in range(15)]
     string_LINE_right = [tk.Label(
         # frame_LINE_right,
-        frame_LINE_left,
+        frame_LINE,
         textvariable=line_text[i]["text_right"], 
         foreground='#000000', 
         background="#ffffff",
         font=("Helvetica", "20", "bold"),
         height=1,          
-        width=20
+        width=6
     ) for i in range(15)]
 
     for i in range(15):
-        # string_LINE_left[i].pack(side=tk.TOP, anchor=tk.W)
-        # string_LINE_right[i].pack(side=tk.RIGHT, anchor=tk.N)
-        string_LINE_left[i].grid(row=i,column=0)
-        string_LINE_right[i].grid(row=i,column=1)
-        # string_LINE_left[i].pack()
-        # string_LINE_right[i].pack()
+        string_LINE_left[i].grid(row=i,column=0,columnspan=5)
+        string_LINE_right[i].grid(row=i,column=5)
 
     #ボタンが押されたときの関数
     #発声文章リストを受け取る
