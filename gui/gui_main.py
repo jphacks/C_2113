@@ -237,15 +237,15 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
 
 
     for i in range(2):
-        for j in range(6):
+        for j in range(7):
             Button_choice=tk.Button(
                 frame_Button,
-                text=buttons[6*i+j].label,
+                text=buttons[7*i+j].label,
                 font=("Helvetica", "25"),
                 background="white",
                 relief=tk.RAISED,
                 pady=5,
-                command=speaking_button_popup(buttons[6*i+j].choices)
+                command=speaking_button_popup(buttons[7*i+j].choices)
             )
             Button_choice.grid(row=1+j,column=i,sticky=tk.NSEW)      
 
@@ -321,7 +321,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         width=25,
         command=speaking_typing_popup
     )
-    Button_choice_free.grid(row=7,column=0,columnspan=2,sticky=tk.NSEW)
+    Button_choice_free.grid(row=8,column=0,columnspan=2,sticky=tk.NSEW)
 
 
     #一般的な言葉のボタン
@@ -398,6 +398,18 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     )
     string_general.grid(row=0,column=0,columnspan=2)
 
+    string_tale = tk.Label(
+        frame_general,
+        text=u"aphacks",
+        foreground="white",
+        background='#00b0d9',
+        font=("ＭＳ Ｐゴシック", "15", "bold"),
+        height=1,
+        width=10,
+    )
+    string_tale.grid(row=8,column=1,ipady=7,pady=12,sticky=tk.SE)
+
+    """
     frame_tale=tk.Frame(
         root,
         #background='#00b0d9',
@@ -416,7 +428,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         width=15,
     )
     string_tale.pack(anchor=tk.E,side=tk.TOP,ipady=10,)
-
+    """
     
 
     if speaking_queue is not None:
