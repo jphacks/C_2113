@@ -80,7 +80,6 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         text="相手の音声",
         font=("Helvetica", "30", "bold"),
         foreground="#3F3D94",
-        #foreground="#1E01F4",
         labelanchor=tk.N,
     )
     frame_listening.grid(row=0,column=0,padx=8)
@@ -108,7 +107,6 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         text="自分の音声",
         font=("Helvetica", "30", "bold"),
         foreground="#3F3D94",
-        #foreground="#1E01F4",
         labelanchor=tk.N,
     )
     frame_speaking.grid(row=0,column=1,padx=8)
