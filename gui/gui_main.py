@@ -35,6 +35,8 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         "text_left": tk.StringVar(value=""), 
         "text_right": tk.StringVar(value="")
         } for _ in range(15)]
+    # log出力用
+    log_text = []
     # line_textに新しい文面が追加されたときの処理
     def line_text_push(mode, text):
         isFull = (line_text[-1]["mode"] is not None)
@@ -284,6 +286,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
                     speak_txt = dict[v.get()]
                     tts_q.put(speak_txt)
                     line_text_push("speak", speak_txt)
+                    log_text.append(f"You: {speak_txt}")
                     speaking_string.set(speak_txt)
 
                 return lambda:inner_destroy(tts_q)
@@ -548,8 +551,11 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
             global speaking_string
             nonlocal temp_v
             sub_root.destroy()
-            line_text_push("speak", temp_v.get())
-            speaking_string.set(temp_v.get())
+
+            temp_v_text = temp_v.get()
+            line_text_push("speak", temp_v_text)
+            log_text.append(f"You: {temp_v_text}")
+            speaking_string.set(temp_v_text)
             
         
 
@@ -586,6 +592,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     def speaking_Button_quick(text):
         def inner_speaking_Button_quick():
             line_text_push("speak", text)
+            log_text.append(f"You: {text}")
             speaking_string.set(text)
         return inner_speaking_Button_quick
 
@@ -736,6 +743,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
                     n = len(txt)
                     for i in range(1, n+1):
                         line_text_push("speak", txt[:i])
+                        log_text.append(f"You: {txt[:i]}")
                         speaking_string.set(txt[:i])
                         time.sleep(speak_time / n)
                 except Empty:
@@ -753,6 +761,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
                     n = len(txt)
                     for i in range(1, n+1):
                         line_text_push("listen", txt[:i])
+                        log_text.append(f"Phone: {txt[:i]}")
                         listening_string.set(txt[:i])
                         time.sleep(1.0 / n)
                 except Empty:
@@ -760,9 +769,15 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
 
         listening_thread = Thread(target=lambda:listening_watcher(listening_queue))
         listening_thread.start()
+    
+    def on_closing():
+        with open('logfile.txt', 'w', encoding='UTF-8') as f:
+            f.write("\n".join(map(str,log_text)))
+        root.destroy()
+
+    root.protocol("WM_DELETE_WINDOW", on_closing)
 
     return root
-
 
 if __name__ == '__main__': # このファイルが直接呼ばれたときだけ以下を呼ぶ
     buttons = []
