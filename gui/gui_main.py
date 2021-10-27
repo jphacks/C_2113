@@ -202,13 +202,13 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         root,
         bg="#eef7ed",
     )
-    frame_LINE_left.grid(row=2,column=0,columnspan=1,rowspan=3,sticky=tk.NSEW)
+    frame_LINE_left.grid(row=2,column=0,columnspan=2,rowspan=3,sticky=tk.NSEW)
 
-    frame_LINE_right=tk.Frame(
+    """frame_LINE_right=tk.Frame(
         root,
         bg="#eef7ed",
     )
-    frame_LINE_right.grid(row=2,column=1,columnspan=1,rowspan=3,sticky=tk.NSEW)
+    frame_LINE_right.grid(row=2,column=1,columnspan=2,rowspan=3,sticky=tk.NSEW)"""
 
     string_LINE_left = [tk.Label(
         frame_LINE_left,
@@ -220,7 +220,8 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         width=15
     ) for i in range(15)]
     string_LINE_right = [tk.Label(
-        frame_LINE_right,
+        # frame_LINE_right,
+        frame_LINE_left,
         textvariable=line_text[i]["text_right"], 
         foreground='#000000', 
         background="#ffffff",
@@ -232,10 +233,10 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     for i in range(15):
         # string_LINE_left[i].pack(side=tk.TOP, anchor=tk.W)
         # string_LINE_right[i].pack(side=tk.RIGHT, anchor=tk.N)
-        # string_LINE_left[i].grid(row=i+2,column=0)
-        # string_LINE_left[i].grid(row=i+2,column=2)
-        string_LINE_left[i].pack()
-        string_LINE_right[i].pack()
+        string_LINE_left[i].grid(row=i,column=0)
+        string_LINE_left[i].grid(row=i,column=1)
+        # string_LINE_left[i].pack()
+        # string_LINE_right[i].pack()
 
     #ボタンが押されたときの関数
     #発声文章リストを受け取る
