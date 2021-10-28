@@ -26,43 +26,50 @@ def main():
     # Button Dataの作成
     buttons = []
     add = lambda name,choices:buttons.append(gui.ButtonData(name, choices))
-    ## 名前
+    ## 名前 1
     name = input_data["名前"]
     add("名前", [f"{name}と申します", f"{name}です", f"{name}ですけれども", f"{name}です、先日はお世話になりました"])
-    ## 人数
+    ## 人数 2
     n = input_data["人数"]
     add("人数", [f"{n}人でお願いします", f"{n}人なのですがいけますか？", f"今のところ{n}人の予定です", f"{n}人です"])
-    ## コース
+    ## コース 3
     course = input_data["コース名"]
-    add("コース", [f"{course}でお願いします", f"{course}でお願いしたいのですが"]) 
-    ## 時間
+    add("コース", [f"{course}でお願いします", f"{course}でお願いしたいのですが",f"{course}で予約できますか"]) 
+    ## 時間 4
     jikan = input_data["何時から"]
     add("時間", [f"{jikan}時からでお願いします", f"{jikan}時からでいけますか？", f"{jikan}時からで大丈夫でしょうか"])
-    ## 持ち帰り
+    ## 持ち帰り 5
     take_out = input_data["持ち帰り"]
-    add("持ち帰り", [f"持ち帰りで{take_out}をお願いします。"])
-    ## 日付
+    add("持ち帰り", [f"持ち帰りで{take_out}をお願いします。",f"{take_out}の持ち帰りをお願いします。"])
+    ## 日付 6
     month = input_data["日付(月)"]
     date = input_data["日付(日)"]
-    add("日付", [f"{month}月{date}日でお願いします。","{month}月{date}日に予約したいです。"])
-    ## 記念日
+    add("日付", [f"{month}月{date}日でお願いします。",f"{month}月{date}日に予約したいです。",f"{month}月{date}日の予約は可能ですか"])
+    ## 記念日 7
     aniversary = input_data["記念日"]
-    add("誕生日", [f"{month}月{date}日は{aniversary}です。",f"{date}日は{aniversary}です。"])
-    ## クレジットカード
+    add("誕生日", [f"{month}月{date}日は{aniversary}です。",f"{date}日は{aniversary}です。",f"{aniversary}をお祝いしたいと思っています。"])
+    ## クレジットカード 8
     pay = input_data["支払いカード"]
-    add("クレジットカード", [f"{pay}は使えますか？",f"{pay}で支払います。"])
-    ## ポイント Go to eat
+    add("クレジットカード", [f"{pay}は使えますか？",f"{pay}で支払います。",f"{pay}加盟店ですか？"])
+    ## ポイント Go to eat 9
     point = input_data["ポイント"]
     add("ポイント", [f"{point}は使えますか?",f"{point}対象店ですか？",f"{point}は貯まりますか？"])
-    ##general
-    add("その他", ["よろしくお願いします。","少々お待ち下さい","大丈夫です。"])
-    ## その他
+    ## 10~14
+    ##general(12のセリフ) 1~12
+    for i in range(18-len(buttons)):
+        buttons.append(gui.ButtonData("人数", [f'{i}人でお願いします' for i in range(18)]))
+
+    add("挨拶",["おはようございます。","こんにちは。","夜分遅くに失礼します。",])
+    add("急かす",["忙しいものですから、早い対応をお願いします。","時間がありませんので、なるべく早くお願いします。","早い時間におねがいします。"])
+    add("社交辞令",["いつもお世話になっております。","ご丁寧にありがとうございます。"])
+    add("相槌", ["よろしくお願いします。","少々お待ち下さい","大丈夫です。"])
+    add("聞き直し",["よく聞こえませんでした。もう一度お聞きしてよろしいですか？","ちょっとよく聞こえなくて","Pardon?"])
+    add("交代",["直接口頭でお話します。","家族が代わってくれるようなので、かわります。","ヘルパーさんがきてくれたのでかわります。"])
     add("時間(午前)", [f"{i}時からは空いてますか？" for i in [8,9,10,11,12]])
     add("時間(昼)", [f"{i}時からは空いてますか？" for i in [11,12,13,14,15,16]])
     add("時間(夕方)", [f"{i}時からは空いてますか？" for i in [14,15,16,17,18,19]])
     add("時間(夜)", [f"{i}時からは空いてますか？" for i in [18,19,20,21,22,23]])
-    for i in range(18-len(buttons)):
-        buttons.append(gui.ButtonData("人数", [f'{i}人でお願いします' for i in range(18)]))
+    
 
     # 共有変数の作成
     tts_queue = queue.Queue()
