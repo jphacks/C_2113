@@ -35,18 +35,20 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     listening_string=tk.StringVar(value="デフォルト")
     
     # lineに保存する文面の管理
+    line_num = 13 # 管理するラインの行数
+    upper_margin = 2 # タイトル分だけ保持する上部の行数の余裕
     line_text = [{
         "mode": None, 
         "text_left": tk.StringVar(value=""), 
         "text_right": tk.StringVar(value="")
-        } for _ in range(15)]
+        } for _ in range(line_num)]
     # log出力用
     log_text = []
     # line_textに新しい文面が追加されたときの処理
     def line_text_push(mode, text):
         isFull = (line_text[-1]["mode"] is not None)
-        for i in range(15):
-            if line_text[i]["mode"] is None or i == 14:
+        for i in range(line_num):
+            if line_text[i]["mode"] is None or i == line_num-1:
                 _line_text_set(i, mode, text)
                 return
             elif isFull and line_text[i+1]["mode"] == "listen":
@@ -62,21 +64,21 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
             string_LINE_left[idx]["background"] ="#B9E2A2",
             string_LINE_left[idx]["width"] = 30
             string_LINE_left[idx].grid_forget()
-            string_LINE_left[idx].grid(row=idx, column=0, columnspan=5, pady=(0,3))
+            string_LINE_left[idx].grid(row=upper_margin+idx, column=0, columnspan=5, pady=(0,3))
             string_LINE_right[idx]["background"] = "#A7B3D3"
             string_LINE_right[idx]["width"] = 6
             string_LINE_right[idx].grid_forget()
-            string_LINE_right[idx].grid(row=idx, column=5, pady=(0,3))
+            string_LINE_right[idx].grid(row=upper_margin+idx, column=5, pady=(0,3))
         else:
             line_text[idx]["text_right"].set(text)
             string_LINE_left[idx]["background"] = "#A7B3D3"
             string_LINE_left[idx]["width"] = 6
             string_LINE_left[idx].grid_forget()
-            string_LINE_left[idx].grid(row=idx, column=0, pady=(0,3))
+            string_LINE_left[idx].grid(row=upper_margin+idx, column=0, pady=(0,3))
             string_LINE_right[idx]["background"] = "#B9E2A2"
             string_LINE_right[idx]["width"] = 30
             string_LINE_right[idx].grid_forget()
-            string_LINE_right[idx].grid(row=idx, column=1, columnspan=5, pady=(0,3))
+            string_LINE_right[idx].grid(row=upper_margin+idx, column=1, columnspan=5, pady=(0,3))
 
     #プロダクトタイトル
     frame_title=tk.Frame(
@@ -169,16 +171,6 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
 
 
     #ログのLINE表示用スペース
-    """title_LINE=tk.Label(
-        root, 
-        bg="white",
-        text="会話ログ",
-        font=("Helvetica", "30", "bold"),
-        highlightcolor="blue",
-        foreground="#102D63",
-    )
-    title_LINE.grid(row=2,column=0,columnspan=2,rowspan=1,sticky=tk.N)"""
-
     frame_LINE=tk.LabelFrame(
         root,
         # bg="white",
@@ -191,13 +183,14 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     )
     frame_LINE.grid(row=2,column=0,columnspan=2,rowspan=2,padx=8,sticky=tk.NSEW)
 
+    # タイトル部分とメッセージ表示部分で背景色を変えるためタイトルは別途作成
     title_LINE=tk.Label(
         root, 
         bg="white",
         text="会話ログ",
         font=("Helvetica", "30", "bold"),
         highlightcolor="blue",
-        foreground="#102D63",
+        foreground="#00B900",
         width=26
     )
     title_LINE.grid(row=2,column=0,columnspan=2,rowspan=1,sticky=tk.N)
@@ -211,7 +204,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         font=("Helvetica", "20",),
         height=1,          
         width=30
-    ) for i in range(15)]
+    ) for i in range(line_num)]
     string_LINE_right = [tk.Label(
         # frame_LINE_right,
         frame_LINE,
@@ -222,11 +215,20 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         font=("Helvetica", "20",),
         height=1,          
         width=6
-    ) for i in range(15)]
+    ) for i in range(line_num)]
+    LINE_under_title = [tk.Label(
+        frame_LINE,
+        text="", 
+        background="#A7B3D3", 
+        height=1
+    ) for i in range(upper_margin)]
 
-    for i in range(15):
-        string_LINE_left[i].grid(row=i,column=0,columnspan=5, ipady=1)
-        string_LINE_right[i].grid(row=i,column=5, ipady=1)
+    for i in range(upper_margin):
+        LINE_under_title[i].grid(row=i,column=0,columnspan=6)
+
+    for i in range(line_num):
+        string_LINE_left[i].grid(row=upper_margin+i,column=0,columnspan=5, ipady=1)
+        string_LINE_right[i].grid(row=upper_margin+i,column=5, ipady=1)
 
     #ボタンが押されたときの関数
     #発声文章リストを受け取る
