@@ -58,21 +58,22 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         line_text[idx]["mode"] = mode
         if mode == "listen":
             line_text[idx]["text_left"].set(text)
-            string_LINE_left[idx]["background"] = "#afecb9"
+            #string_LINE_left[idx]["background"] = "#afecb9"
+            string_LINE_left[idx]["background"] ="#B9E2A2",
             string_LINE_left[idx]["width"] = 30
             string_LINE_left[idx].grid_forget()
             string_LINE_left[idx].grid(row=idx, column=0, columnspan=5)
-            string_LINE_right[idx]["background"] = "#ffffff"
+            string_LINE_right[idx]["background"] = "#A7B3D3"
             string_LINE_right[idx]["width"] = 6
             string_LINE_right[idx].grid_forget()
             string_LINE_right[idx].grid(row=idx, column=5)
         else:
             line_text[idx]["text_right"].set(text)
-            string_LINE_left[idx]["background"] = "#ffffff"
+            string_LINE_left[idx]["background"] = "#A7B3D3"
             string_LINE_left[idx]["width"] = 6
             string_LINE_left[idx].grid_forget()
             string_LINE_left[idx].grid(row=idx, column=0)
-            string_LINE_right[idx]["background"] = "#86d792"
+            string_LINE_right[idx]["background"] = "#B9E2A2"
             string_LINE_right[idx]["width"] = 30
             string_LINE_right[idx].grid_forget()
             string_LINE_right[idx].grid(row=idx, column=1, columnspan=5)
@@ -186,8 +187,9 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         frame_LINE,
         textvariable=line_text[i]["text_left"], 
         foreground='#000000', 
-        background="#ffffff",
-        font=("Helvetica", "20", "bold"),
+        #background="#ffffff",
+        background="#A7B3D3",
+        font=("Helvetica", "20",),
         height=1,          
         width=30
     ) for i in range(15)]
@@ -196,8 +198,9 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         frame_LINE,
         textvariable=line_text[i]["text_right"], 
         foreground='#000000', 
-        background="#ffffff",
-        font=("Helvetica", "20", "bold"),
+        background="#A7B3D3",
+        #background="#ffffff",
+        font=("Helvetica", "20",),
         height=1,          
         width=6
     ) for i in range(15)]
@@ -320,8 +323,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
 
         typing_title=tk.Label(
         sub_root,
-        text=u"話したい文章を記入してください", 
-        #foreground='#00b0d9', 
+        text=u"話したい文章を記入してください",  
         background='#FFFFFF',
         font=("Helvetica", "30", ),
         height=1,
@@ -468,28 +470,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         width=10,
     )
     string_tale.grid(row=8,column=1,ipady=7,pady=12,sticky=tk.SE)
-
-    """
-    frame_tale=tk.Frame(
-        root,
-        #background='#00b0d9',
-        background="white"
-    )
-    frame_tale.grid(row=3,column=3,columnspan=2,sticky=tk.NSEW)
-
-
-    string_tale = tk.Label(
-        frame_tale,
-        text=u"aphacks",
-        foreground="white",
-        background='#00b0d9',
-        font=("ＭＳ Ｐゴシック", "15", "bold"),
-        height=1,
-        width=15,
-    )
-    string_tale.pack(anchor=tk.E,side=tk.TOP,ipady=10,)
-    """
-    
+   
 
     if speaking_queue is not None:
         # Queueを介して喋る内容を受け取る
