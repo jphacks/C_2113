@@ -172,7 +172,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     frame_LINE=tk.LabelFrame(
         root,
         bg="white",
-        bd=1,
+        bd=0,
         font=("Helvetica", "30", "bold"),
         foreground="#00B900",
         text="会話ログ",
@@ -374,7 +374,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         frame_Button,
         text="自由入力",
         font=("Helvetica", "25", "bold"),
-        foreground="indigo",
+        foreground="#7030A0",
         background="yellow",
         relief=tk.RAISED,
         pady=5,
