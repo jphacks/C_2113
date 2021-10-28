@@ -7,7 +7,7 @@ from typing import Dict, List
 from threading import Thread
 import time
 from queue import Queue, Empty
-
+import unicodedata
 
 
 @dataclass
@@ -56,29 +56,53 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
             elif isFull and line_text[i+1]["mode"] == "speak":
                 _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_right"].get())
 
-    def _line_text_set(idx, mode, text):
+    def _line_text_set(idx, mode, text, isMiddle=False):
+        count = 0
+        for i, c in enumerate(text):
+            count += _char_length(text[i])
+            if count >= 85 and i < len(text)-1:
+                _line_text_put(idx,mode,text[:i+1],isMiddle=True)
+                _line_text_set(idx,mode,text[i+1:],isMiddle=True)
+                return
+        if (not isMiddle) and count < 51:
+            _line_text_put(idx,mode,text, grid_length=3)
+        else:
+             _line_text_put(idx,mode,text)
+
+    def _line_text_put(idx, mode, text, isMiddle=False, grid_length=5):
         line_text[idx]["mode"] = mode
+        if isMiddle:
+            pad_below = 0
+        else:
+            pad_below = 3
+
         if mode == "listen":
             line_text[idx]["text_left"].set(text)
             #string_LINE_left[idx]["background"] = "#afecb9"
             string_LINE_left[idx]["background"] ="#B9E2A2",
             string_LINE_left[idx]["width"] = 30
             string_LINE_left[idx].grid_forget()
-            string_LINE_left[idx].grid(row=upper_margin+idx, column=0, columnspan=5, pady=(0,3))
+            string_LINE_left[idx].grid(row=upper_margin+idx, column=0, columnspan=grid_length, pady=(0,pad_below))
             string_LINE_right[idx]["background"] = "#A7B3D3"
             string_LINE_right[idx]["width"] = 6
             string_LINE_right[idx].grid_forget()
-            string_LINE_right[idx].grid(row=upper_margin+idx, column=5, pady=(0,3))
+            string_LINE_right[idx].grid(row=upper_margin+idx, column=grid_length, pady=(0,pad_below))
         else:
             line_text[idx]["text_right"].set(text)
             string_LINE_left[idx]["background"] = "#A7B3D3"
             string_LINE_left[idx]["width"] = 6
             string_LINE_left[idx].grid_forget()
-            string_LINE_left[idx].grid(row=upper_margin+idx, column=0, pady=(0,3))
+            string_LINE_left[idx].grid(row=upper_margin+idx, column=0, pady=(0,pad_below))
             string_LINE_right[idx]["background"] = "#B9E2A2"
             string_LINE_right[idx]["width"] = 30
             string_LINE_right[idx].grid_forget()
-            string_LINE_right[idx].grid(row=upper_margin+idx, column=1, columnspan=5, pady=(0,3))
+            string_LINE_right[idx].grid(row=upper_margin+idx, column=6-grid_length, columnspan=grid_length, pady=(0,pad_below))
+
+    def _char_length(c):
+        if unicodedata.east_asian_width(c) in ['H', 'Na', 'N']:
+            return 3
+        else:
+            return 5
 
     #プロダクトタイトル
     frame_title=tk.Frame(
@@ -191,7 +215,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         font=("Helvetica", "30", "bold"),
         highlightcolor="blue",
         foreground="#00B900",
-        width=26
+        width=26 # ここを27or28にすればメッセージの横に余白が作れる（多分）
     )
     title_LINE.grid(row=2,column=0,columnspan=2,rowspan=1,sticky=tk.N)
 
@@ -227,8 +251,8 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         LINE_under_title[i].grid(row=i,column=0,columnspan=6)
 
     for i in range(line_num):
-        string_LINE_left[i].grid(row=upper_margin+i,column=0,columnspan=5, ipady=1)
-        string_LINE_right[i].grid(row=upper_margin+i,column=5, ipady=1)
+        string_LINE_left[i].grid(row=upper_margin+i,column=0,columnspan=5, pady=(0,3))
+        string_LINE_right[i].grid(row=upper_margin+i,column=5, pady=(0,3))
 
     #ボタンが押されたときの関数
     #発声文章リストを受け取る
