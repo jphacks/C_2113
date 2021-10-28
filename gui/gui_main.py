@@ -169,15 +169,15 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
 
 
     #ログのLINE表示用スペース
-    title_LINE=tk.LabelFrame(
+    """title_LINE=tk.Label(
         root, 
-        bg="black",
+        bg="white",
         text="会話ログ",
         font=("Helvetica", "30", "bold"),
         highlightcolor="blue",
-        relief="groove"
+        foreground="#102D63",
     )
-    title_LINE.grid(row=2,column=0,columnspan=2)
+    title_LINE.grid(row=2,column=0,columnspan=2,rowspan=1,sticky=tk.N)"""
 
     frame_LINE=tk.LabelFrame(
         root,
@@ -185,14 +185,22 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         bg="#A7B3D3",
         bd=0,
         font=("Helvetica", "30", "bold"),
-        foreground="#00B900",
-        # foreground="#A7B3D3",
-        text="会話ログ",
         labelanchor=tk.N,
         relief="solid",
         # highlightcolor="blue",
     )
-    frame_LINE.grid(row=3,column=0,columnspan=2,rowspan=1,padx=8,sticky=tk.NSEW)
+    frame_LINE.grid(row=2,column=0,columnspan=2,rowspan=2,padx=8,sticky=tk.NSEW)
+
+    title_LINE=tk.Label(
+        root, 
+        bg="white",
+        text="会話ログ",
+        font=("Helvetica", "30", "bold"),
+        highlightcolor="blue",
+        foreground="#102D63",
+        width=26
+    )
+    title_LINE.grid(row=2,column=0,columnspan=2,rowspan=1,sticky=tk.N)
 
     string_LINE_left = [tk.Label(
         frame_LINE,
