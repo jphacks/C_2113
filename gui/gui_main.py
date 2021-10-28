@@ -62,21 +62,21 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
             string_LINE_left[idx]["background"] ="#B9E2A2",
             string_LINE_left[idx]["width"] = 30
             string_LINE_left[idx].grid_forget()
-            string_LINE_left[idx].grid(row=idx, column=0, columnspan=5)
+            string_LINE_left[idx].grid(row=idx, column=0, columnspan=5, pady=(0,3))
             string_LINE_right[idx]["background"] = "#A7B3D3"
             string_LINE_right[idx]["width"] = 6
             string_LINE_right[idx].grid_forget()
-            string_LINE_right[idx].grid(row=idx, column=5)
+            string_LINE_right[idx].grid(row=idx, column=5, pady=(0,3))
         else:
             line_text[idx]["text_right"].set(text)
             string_LINE_left[idx]["background"] = "#A7B3D3"
             string_LINE_left[idx]["width"] = 6
             string_LINE_left[idx].grid_forget()
-            string_LINE_left[idx].grid(row=idx, column=0)
+            string_LINE_left[idx].grid(row=idx, column=0, pady=(0,3))
             string_LINE_right[idx]["background"] = "#B9E2A2"
             string_LINE_right[idx]["width"] = 30
             string_LINE_right[idx].grid_forget()
-            string_LINE_right[idx].grid(row=idx, column=1, columnspan=5)
+            string_LINE_right[idx].grid(row=idx, column=1, columnspan=5, pady=(0,3))
 
     #プロダクトタイトル
     frame_title=tk.Frame(
@@ -169,19 +169,30 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
 
 
     #ログのLINE表示用スペース
+    title_LINE=tk.LabelFrame(
+        root, 
+        bg="black",
+        text="会話ログ",
+        font=("Helvetica", "30", "bold"),
+        highlightcolor="blue",
+        relief="groove"
+    )
+    title_LINE.grid(row=2,column=0,columnspan=2)
+
     frame_LINE=tk.LabelFrame(
         root,
-        bg="white",
+        # bg="white",
+        bg="#A7B3D3",
         bd=0,
         font=("Helvetica", "30", "bold"),
         foreground="#00B900",
+        # foreground="#A7B3D3",
         text="会話ログ",
         labelanchor=tk.N,
         relief="solid",
-        highlightcolor="blue",
-        
+        # highlightcolor="blue",
     )
-    frame_LINE.grid(row=2,column=0,columnspan=2,rowspan=2,padx=8,sticky=tk.NSEW)
+    frame_LINE.grid(row=3,column=0,columnspan=2,rowspan=1,padx=8,sticky=tk.NSEW)
 
     string_LINE_left = [tk.Label(
         frame_LINE,
@@ -206,8 +217,8 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     ) for i in range(15)]
 
     for i in range(15):
-        string_LINE_left[i].grid(row=i,column=0,columnspan=5)
-        string_LINE_right[i].grid(row=i,column=5)
+        string_LINE_left[i].grid(row=i,column=0,columnspan=5, ipady=1)
+        string_LINE_right[i].grid(row=i,column=5, ipady=1)
 
     #ボタンが押されたときの関数
     #発声文章リストを受け取る
