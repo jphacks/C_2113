@@ -56,9 +56,9 @@ class Application(tk.Frame):
         #タイトル(mainと同一にする)
         string_title = tk.Label(
             text=u"rityo_math（プロダクト名）", 
-            foreground='#00b0d9', 
-            background='#FFFFFF',
-            font=("Helvetica", "50", "bold"),
+            foreground='#FFFFFF', 
+            background='#00b0d9',
+            font=("ＭＳ Ｐゴシック", "35", "bold"),
             height=1,
             width=30
         )
@@ -92,9 +92,9 @@ class Application(tk.Frame):
 
     def create_weget(self, input_form_list):
         # 左側のフレーム
-        frame_left = tk.Frame(self.master)
+        frame_left = tk.Frame(self.master,background="#e6e6e6")
         # 右側のフレーム
-        frame_right = tk.Frame(self.master)
+        frame_right = tk.Frame(self.master,background="#e6e6e6")
         
         # in_ = frame_right
         for input_form in input_form_list:
@@ -125,14 +125,6 @@ class Application(tk.Frame):
         # フレームの配置
         frame_left.pack(side = tk.LEFT, expand = True)
         frame_right.pack(side = tk.LEFT, expand = True)
-
-        
-
-        
-
-                
-        
-
 
     def decision(self,event):
         self.Send_data(event)
