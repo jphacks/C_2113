@@ -1,11 +1,14 @@
 # -*- coding:utf-8 -*-
 import sys
 import tkinter as tk
+from tkinter import ttk
 from dataclasses import dataclass
 from typing import Dict, List
 from threading import Thread
 import time
 from queue import Queue, Empty
+
+
 
 @dataclass
 class ButtonData:
@@ -19,12 +22,14 @@ class SpeakingData:
 
 def main(tts_queue, buttons, speaking_queue=None, listening_queue=None): 
 
-    #root の設定（サイズは1500x750）
+    #root の設定（サイズは1380x900）
     root = tk.Tk()
     root.title(u"main")
-    root.geometry("1500x750")
+    root.geometry("1380x850")
+    root.config(background="white")
 
     global sub_root
+    sub_root=None
     global speaking_string
     speaking_string=tk.StringVar(value="デフォルト")
     listening_string=tk.StringVar(value="デフォルト")
@@ -33,206 +38,164 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     #プロダクトタイトル
     frame_title=tk.Frame(
         root,
+        background='#00b0d9'
     )
     frame_title.grid(row=0,column=0,columnspan=5,sticky=tk.NSEW)
 
+
     string_title = tk.Label(
         frame_title,
-        text=u"rityo_math（プロダクト名）", 
-        foreground='#00b0d9', 
-        background='#FFFFFF',
-        font=("Helvetica", "50", "bold"),
+        text=u"rityo_math（プロダクト名）",
+        foreground="white",
+        background='#00b0d9',
+        font=("ＭＳ Ｐゴシック", "35", "bold"),
         height=1,
-        width=30
+        width=30,
     )
-    string_title.pack(anchor=tk.N,side=tk.TOP)
+    string_title.pack(anchor=tk.NW,side=tk.TOP,ipady=10,)
 
-
+    #横線
+    canvas = tk.Canvas(
+        frame_title,
+        height=8,
+        bg="#102D63",
+    )
+    canvas.pack(anchor=tk.N,side=tk.TOP,fill="x")
+    
+    
     #認識音声/発声音声 出力画面
     frame_view=tk.Frame(
         root,
+        bg="white",
     )
-    frame_view.grid(row=1,column=0,columnspan=5,sticky=tk.NSEW)
+    frame_view.grid(row=1,column=0,columnspan=5,pady=10)
 
 
     #認識音声側
-    frame_listening=tk.Frame(
+    frame_listening=tk.LabelFrame(
         frame_view,
-        bg="#edf7f5",
-        highlightthickness=3, 
-        highlightbackground="gray", 
-        highlightcolor="red",
-        takefocus=True
+        bg="white",
+        bd=2,
+        relief="solid",
+        text="相手の音声",
+        font=("Helvetica", "30", "bold"),
+        foreground="#3F3D94",
+        labelanchor=tk.N,
     )
-    frame_listening.pack(anchor=tk.NW,padx=10,pady=10,side=tk.LEFT)
+    frame_listening.grid(row=0,column=0,padx=8)
 
-    # 相手が発声中かを表示。
-    # 相手が発声中だけ点灯させたい（todo）
-    string_listening_flag= tk.Label(
-        frame_listening,
-        text=u"発声中", 
-        foreground="red", 
-        background="#ffffff",
-        font=("Helvetica", "25", "bold"),
-        height=1,
-        width=5,
-    )
-    string_listening_flag.pack(anchor=tk.NE,side=tk.RIGHT)
-
-
-    #タイトル
-    string_listening_title= tk.Label(
-        frame_listening,
-        text=u"相手の音声", 
-        foreground='#000000', 
-        background="#ffffff",
-        font=("Helvetica", "25", "bold"),
-        height=1,
-        width=9,
-    )
-    string_listening_title.pack(anchor=tk.N,side=tk.TOP,pady=5)
-
-    #相手の発言を表示(todo)
+    #相手の発言を表示
     string_listening= tk.Label(
         frame_listening,
         textvariable=listening_string, 
         foreground='#000000', 
         background="#ffffff",
         font=("Helvetica", "25", "bold"),
-        height=4,
-        width=40,
+        height=5,
+        width=49,
+        # これで改行できるけどどうですか？
+        wraplength=680,
     )
-    string_listening.pack(anchor=tk.NW,side=tk.LEFT)
+    string_listening.pack()
 
-
-    #音声出力側
-    frame_speaking=tk.Frame(
+    #自分側
+    frame_speaking=tk.LabelFrame(
         frame_view,
-
-        bg="#edf7f5",
-        highlightthickness=3, 
-        highlightbackground="gray", 
-        highlightcolor="red", 
-        takefocus=True
+        bg="white",
+        bd=2,
+        relief="solid",
+        text="自分の音声",
+        font=("Helvetica", "30", "bold"),
+        foreground="#3F3D94",
+        labelanchor=tk.N,
     )
-    frame_speaking.pack(anchor=tk.NE,padx=10,pady=10,side=tk.RIGHT)
+    frame_speaking.grid(row=0,column=1,padx=8)
 
-    #自分が発声中かを表示。
-    # 自分が発声中だけ点灯させたい(todo)
-    string_speaking_flag= tk.Label(
-        frame_speaking,
-        text=u"発声中", 
-        foreground="red", 
-        background="#ffffff",
-        font=("Helvetica", "25", "bold"),
-        height=1,
-        width=5,
-    )
-    string_speaking_flag.pack(anchor=tk.NE,side=tk.RIGHT)
-
-
-    #タイトル
-    string_speaking_title= tk.Label(
-        frame_speaking,
-        text=u"自分の音声", 
-        foreground='#000000', 
-        background="#ffffff",
-        font=("Helvetica", "25", "bold"),
-        height=1,
-        width=9,
-    )
-    string_speaking_title.pack(anchor=tk.N,side=tk.TOP,pady=5)
-
-
-    #自分が発言している文章が入る(todo)
-    #カラオケみたいにしたい(todo)
-    #発言中は背景色も変わるようにしたい(todo)
+    #自分の発言を表示
     string_speaking= tk.Label(
         frame_speaking,
         textvariable=speaking_string, 
         foreground='#000000', 
         background="#ffffff",
         font=("Helvetica", "25", "bold"),
-        height=4,
-        width=40,
-        
+        height=5,
+        width=49,
+        wraplength=680,
     )
-    string_speaking.pack(anchor=tk.NW,side=tk.LEFT)
-
+    string_speaking.pack()
 
 
     #ログのLINE表示用スペース
-
-    frame_LINE=tk.Frame(
+    frame_LINE=tk.LabelFrame(
         root,
-        bg="#eef7ed",
+        bg="white",
+        bd=1,
+        font=("Helvetica", "30", "bold"),
+        foreground="#00B900",
+        text="会話ログ",
+        labelanchor=tk.N,
+        relief="solid",
+        highlightcolor="blue",
+        
     )
-    frame_LINE.grid(row=2,column=0,columnspan=2,rowspan=3,sticky=tk.NSEW)
+    frame_LINE.grid(row=2,column=0,columnspan=2,rowspan=2,padx=8,sticky=tk.NSEW)
 
     #LINE表示用
     string_LINE= tk.Label(
         frame_LINE,
-        text=u"（ここにLINEが入る） 1 \n 2 \n 3 \n 4 \n 5 \n 6 \n 7 \n 8 \n 9 \n 10 \n 11 \n 12 \n 13 \n 14 \n 15", 
+        text=u" 1 \n 2 \n 3 \n 4 \n 5 \n 6 \n 7 \n 8 \n 9 \n 10 \n 11 \n 12 \n 13 \n 14 \n 15 " , 
         foreground='#000000', 
         background="#ffffff",
-        font=("Helvetica", "25", "bold"),
+        font=("Helvetica", "25", ),
         height=15,          
-        width=30
+        width=35
     )
 
     string_LINE.pack(anchor=tk.N,side=tk.TOP,)
 
 
-
     #ボタンが押されたときの関数
     #発声文章リストを受け取る
     #tts_qのところはデフォルト引数のままでいい
-    def speaking_button_popup(dict, tts_q=tts_queue):
+
+    def speaking_button_popup(list, tts_q=tts_queue):
         def inner_func(tts_q):
         #popup window
             global sub_root
             global speaking_string
             global tts_queue
+            if sub_root is None or not sub_root.winfo_exists():
+                pass
+            else:
+                sub_root.destroy()
             sub_root=tk.Toplevel(root)
+            sub_root.config(background="white")
             sub_root.title("文章選択")
-            sub_root.geometry("750x500")
+            sub_root.geometry("800x700")
 
             #radio button 変数
             v = tk.IntVar(value=0)
 
-            radio_0 = tk.Radiobutton(
-                sub_root,
-                text=dict[0],
-                variable=v,
-                value=0,
-                font=("Helvetica", "25", "bold"),
-            )
-            radio_0.pack()
+            for i in range(len(list)):
 
-            radio_1 = tk.Radiobutton(
-                sub_root,
-                text=dict[1],
-                variable=v,
-                value=1,
-                font=("Helvetica", "25", "bold"),
-            )
-            radio_1.pack()            
+                radio = tk.Radiobutton(
+                    sub_root,
+                    text=list[i],
+                    variable=v,
+                    value=i,
+                    font=("Helvetica", "25", ),
+                    foreground="red",
+                    background="white"
+                )
+                radio.pack()
 
-            radio_2 = tk.Radiobutton(
-                sub_root,
-                text=dict[2],
-                variable=v,
-                value=2,
-                font=("Helvetica", "25", "bold"),
-            )
-            radio_2.pack()
             
             def destroy_func(v, tts_q):
                 def inner_destroy(tts_q):
                     global sub_root
                     global speaking_string
                     sub_root.destroy()
-                    speak_txt = dict[v.get()]
+                    speak_txt = list[v.get()]
                     tts_q.put(speak_txt)
                     speaking_string.set(speak_txt)
 
@@ -243,238 +206,70 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
                 text="発声する",
                 font=("Helvetica", "25", "bold"),
                 relief=tk.RAISED,
-                foreground="red",
                 pady=5,
                 command=destroy_func(v, tts_q)
             )
             sub_final_Button.pack()
 
         return lambda:inner_func(tts_q)
-
+    
 
 
     #選択肢ボタン
-    frame_Button=tk.Frame(
+    frame_Button=tk.LabelFrame(
         root,
-        bg="#fdf7ff",   
-    )
-    frame_Button.grid(row=2,column=2,sticky=tk.NSEW)
-
-    string_Button_title=tk.Label(
-        frame_Button,
-        text=u"話題", 
-        foreground='#00b0d9', 
-        background='#FFFFFF',
+        bg="white",  
+        bd=0,
+        text="話題",
+        foreground="#102D63",
         font=("Helvetica", "30", "bold"),
+        labelanchor=tk.N
     )
-    string_Button_title.grid(row=0,column=0,sticky=tk.N)
+    frame_Button.grid(row=2,column=2,columnspan=1,sticky=tk.NSEW)
 
-
-
-        
-
-    #選択肢(1,1)
-    dict_11={0:"サンプル文章０",1:"サンプル文章１",2:"サンプル文章２"}
-    Button_choice_11=tk.Button(
+    string_button=tk.Label(
         frame_Button,
-        text="人数",
-        font=("Helvetica", "25", "bold"),
-        relief=tk.RAISED,
-        pady=5,
-        command=speaking_button_popup(dict_11)
+        text="関連する候補文章リストを表示します。",
+        font=("Helvetica", "20"),
+        background="white",
     )
-    Button_choice_11.grid(row=1,column=0,sticky=tk.NSEW)
+    string_button.grid(row=0,column=0,columnspan=2)
 
 
-    dict_21={0:"サンプル文章０",1:"サンプル文章１",2:"サンプル文章２"}
-    #選択肢(2,1)
-    Button_choice_21=tk.Button(
-        frame_Button,
-        text="時間",
-        font=("Helvetica", "25", "bold"),
-        relief=tk.RAISED,
-        pady=5,
-        command=speaking_button_popup(dict_21)
-    )
-    Button_choice_21.grid(row=2,column=0,sticky=tk.NSEW)
+    for i in range(2):
+        for j in range(7):
+            Button_choice=tk.Button(
+                frame_Button,
+                text=buttons[7*i+j].label,
+                font=("Helvetica", "25"),
+                background="white",
+                relief=tk.RAISED,
+                pady=5,
+                command=speaking_button_popup(buttons[7*i+j].choices)
+            )
+            Button_choice.grid(row=1+j,column=i,sticky=tk.NSEW)      
 
-    #選択肢(3,1)
-    Button_choice_31=tk.Button(
-        frame_Button,
-        text="キャンセル",
-        font=("Helvetica", "25", "bold"),
-        relief=tk.RAISED,
-        pady=5
-    )
-    Button_choice_31.grid(row=3,column=0,sticky=tk.NSEW)
-
-    #選択肢(4,1)
-    Button_choice_41=tk.Button(
-        frame_Button,
-        text="選択肢４１",
-        font=("Helvetica", "25", "bold"),
-        relief=tk.RAISED,
-        pady=5
-    )
-    Button_choice_41.grid(row=4,column=0,sticky=tk.NSEW)
-
-    #選択肢(5,1)
-    Button_choice_51=tk.Button(
-        frame_Button,
-        text="選択肢５１",
-        font=("Helvetica", "25", "bold"),
-        relief=tk.RAISED,
-        pady=5
-    )
-    Button_choice_51.grid(row=5,column=0,sticky=tk.NSEW)
-
-    #選択肢(6,1)
-    Button_choice_61=tk.Button(
-        frame_Button,
-        text="選択肢６１",
-        font=("Helvetica", "25", "bold"),
-        relief=tk.RAISED,
-        pady=5
-    )
-    Button_choice_61.grid(row=6,column=0,sticky=tk.NSEW)
-
-
-    #選択肢(1,2)
-    Button_choice_12=tk.Button(
-        frame_Button,
-        text="選択肢１２",
-        font=("Helvetica", "25", "bold"),
-        relief=tk.RAISED,
-        pady=5
-    )
-    Button_choice_12.grid(row=1,column=1,sticky=tk.NSEW)
-
-    #選択肢(2,2)
-    Button_choice_22=tk.Button(
-        frame_Button,
-        text="選択肢２２",
-        font=("Helvetica", "25", "bold"),
-        relief=tk.RAISED,
-        pady=5
-    )
-    Button_choice_22.grid(row=2,column=1,sticky=tk.NSEW)
-
-    #選択肢(3,2)
-    Button_choice_32=tk.Button(
-        frame_Button,
-        text="選択肢３２",
-        font=("Helvetica", "25", "bold"),
-        relief=tk.RAISED,
-        pady=5
-    )
-    Button_choice_32.grid(row=3,column=1,sticky=tk.NSEW)
-
-    #選択肢(4,2)
-    Button_choice_42=tk.Button(
-        frame_Button,
-        text="選択肢４２",
-        font=("Helvetica", "25", "bold"),
-        relief=tk.RAISED,
-        pady=5
-    )
-    Button_choice_42.grid(row=4,column=1,sticky=tk.NSEW)
-
-    #選択肢(5,2)
-    Button_choice_52=tk.Button(
-        frame_Button,
-        text="選択肢５２",
-        font=("Helvetica", "25", "bold"),
-        relief=tk.RAISED,
-        pady=5
-    )
-    Button_choice_52.grid(row=5,column=1,sticky=tk.NSEW)
-
-    #選択肢(6,2)
-    Button_choice_62=tk.Button(
-        frame_Button,
-        text="選択肢６２",
-        font=("Helvetica", "25", "bold"),
-        relief=tk.RAISED,
-        pady=5
-    )
-    Button_choice_62.grid(row=6,column=1,sticky=tk.NSEW)
-
-
-    #選択肢(1,3)（ここらはカスタムでできないかな？）
-    Button_choice_13=tk.Button(
-        frame_Button,
-        text="カスタム１",
-        font=("Helvetica", "25", "bold"),
-        relief=tk.RAISED,
-        pady=5
-    )
-    Button_choice_13.grid(row=1,column=2,sticky=tk.NSEW)
-
-    #選択肢(2,3)（ここらはカスタムでできないかな？）
-    Button_choice_23=tk.Button(
-        frame_Button,
-        text="カスタム２",
-        font=("Helvetica", "25", "bold"),
-        relief=tk.RAISED,
-        pady=5
-    )
-    Button_choice_23.grid(row=2,column=2,sticky=tk.NSEW)
-
-    #選択肢(3,3)（ここらはカスタムでできないかな？）
-    Button_choice_33=tk.Button(
-        frame_Button,
-        text="カスタム３",
-        font=("Helvetica", "25", "bold"),
-        relief=tk.RAISED,
-        pady=5
-    )
-    Button_choice_33.grid(row=3,column=2,sticky=tk.NSEW)
-
-    #選択肢(4,3)（ここらはカスタムでできないかな？）
-    Button_choice_43=tk.Button(
-        frame_Button,
-        text="カスタム４",
-        font=("Helvetica", "25", "bold"),
-        relief=tk.RAISED,
-        pady=5
-    )
-    Button_choice_43.grid(row=4,column=2,sticky=tk.NSEW)
-
-    #選択肢(5,3)（ここらはカスタムでできないかな？）
-    Button_choice_53=tk.Button(
-        frame_Button,
-        text="カスタム５",
-        font=("Helvetica", "25", "bold"),
-        relief=tk.RAISED,
-        pady=5
-    )
-    Button_choice_53.grid(row=5,column=2,sticky=tk.NSEW)
-
-    #選択肢(6,3)（ここらはカスタムでできないかな？）
-    Button_choice_63=tk.Button(
-        frame_Button,
-        text="カスタム６",
-        font=("Helvetica", "25", "bold"),
-        relief=tk.RAISED,
-        pady=5
-    )
-    Button_choice_63.grid(row=6,column=2,sticky=tk.NSEW)
-
+    
 
     def speaking_typing_popup():
         #popup window
         global sub_root
         global speaking_string
+        if sub_root is None or not sub_root.winfo_exists():
+            pass
+        else:
+            sub_root.destroy()
         sub_root=tk.Toplevel(root)
+        sub_root.config(background="white")
         sub_root.title("文章選択")
-        sub_root.geometry("750x500")
+        sub_root.geometry("800x700")
 
         typing_title=tk.Label(
         sub_root,
         text=u"話したい文章を記入してください", 
-        foreground='#00b0d9', 
+        #foreground='#00b0d9', 
         background='#FFFFFF',
-        font=("Helvetica", "30", "bold"),
+        font=("Helvetica", "30", ),
         height=1,
         width=40
         )
@@ -483,7 +278,6 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         temp_v=tk.StringVar(value="")
         typing_box = tk.Entry(
             sub_root,
-            #textvariable=speaking_string,
             textvariable=temp_v,
             width=40,
             font=("Helvetica", "30", "bold"),
@@ -507,7 +301,6 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
             text="発声する",
             font=("Helvetica", "25", "bold"),
             relief=tk.RAISED,
-            foreground="red",
             pady=5,
             command=destroy_typing_func
         )
@@ -521,12 +314,14 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         frame_Button,
         text="自由入力",
         font=("Helvetica", "25", "bold"),
-        foreground="green",
+        foreground="indigo",
+        background="yellow",
         relief=tk.RAISED,
         pady=5,
+        width=25,
         command=speaking_typing_popup
     )
-    Button_choice_free.grid(row=7,column=0,columnspan=3,sticky=tk.NSEW)
+    Button_choice_free.grid(row=8,column=0,columnspan=2,sticky=tk.NSEW)
 
 
     #一般的な言葉のボタン
@@ -537,140 +332,104 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
             speaking_string.set(text)
         return inner_speaking_Button_quick
 
-    frame_general=tk.Frame(
+
+
+    frame_general=tk.LabelFrame(
         root,
-        #width=500,
-        #height=300,
-        bg="#f8faf2",   
+        bg="white",  
+        bd=0,
+        text="候補文（即発声）",
+        foreground="#102D63",
+        font=("Helvetica", "30", "bold"),
+        labelanchor=tk.N
     )
     frame_general.grid(row=2,column=3,columnspan=2,sticky=tk.NSEW)
 
 
-    string_general_title=tk.Label(
+    #ページ遷移用
+    global v_general
+    v_general = tk.IntVar(value=0)
+
+    def Button_place():
+        global v_general
+        for i in range(6):
+            if v_general.get()==0:
+                val_general=buttons[-1].choices[i]
+                
+            elif v_general.get()==1:
+                val_general=buttons[-1].choices[6+i]
+            Button_general=tk.Button(
+                frame_general,
+                text=val_general,
+                font=("Helvetica", "25",),
+                foreground="red",
+                background="#e6f7f6",
+                height=1,
+                width=35,
+                pady=5,
+                command=speaking_Button_quick(val_general),
+                relief=tk.RAISED,
+                
+            )
+            Button_general.grid(row=i+1,column=0,columnspan=2,sticky=tk.NSEW)
+    
+    #ボタン初期配置
+    Button_place()
+    
+            
+    for i in range(2):
+        radio = tk.Radiobutton(
+            frame_general,
+            text=f"ページ {i+1}",
+            variable=v_general,
+            value=i,
+            font=("Helvetica", "25"),
+            background="white",
+            command=Button_place
+        )
+        radio.grid(row=7,column=i)
+    
+
+    string_general=tk.Label(
         frame_general,
-        text=u"general", 
-        foreground='#00b0d9', 
-        background='#FFFFFF',
-        font=("Helvetica", "30", "bold"),
-        height=1,
-        width=9
+        text="便利な候補文章を即発声します。",
+        font=("Helvetica", "20"),
+        background="white",
     )
-    string_general_title.pack(anchor=tk.N)
+    string_general.grid(row=0,column=0,columnspan=2)
 
-
-
-    Button_general_1=tk.Button(
+    string_tale = tk.Label(
         frame_general,
-        text="よろしくお願いします",
-        font=("Helvetica", "25", "bold"),
-        foreground="red",
-        background="#e6f7f6",
+        text=u"aphacks",
+        foreground="white",
+        background='#00b0d9',
+        font=("ＭＳ Ｐゴシック", "15", "bold"),
         height=1,
-        width=35,
-        pady=5,
-        relief=tk.RAISED,
-        command=speaking_Button_quick("よろしくお願いします")
+        width=10,
     )
+    string_tale.grid(row=8,column=1,ipady=7,pady=12,sticky=tk.SE)
 
-    Button_general_1.pack(anchor=tk.N)
-
-    Button_general_2=tk.Button(
-        frame_general,
-        text="そうです",
-        font=("Helvetica", "25", "bold"),
-        foreground="red",
-        height=1,
-        width=35,
-        pady=5,
-        relief=tk.RAISED
-    )
-
-    Button_general_2.pack(anchor=tk.N)
-
-    Button_general_3=tk.Button(
-        frame_general,
-        text="はい",
-        font=("Helvetica", "25", "bold"),
-        foreground="red",
-        height=1,
-        width=35,
-        pady=5,
-        relief=tk.RAISED
-    )
-
-    Button_general_3.pack(anchor=tk.N)
-
-    Button_general_4=tk.Button(
-        frame_general,
-        text="結構です",
-        font=("Helvetica", "25", "bold"),
-        foreground="red",
-        height=1,
-        width=35,
-        pady=5,
-        relief=tk.RAISED
-    )
-
-    Button_general_4.pack(anchor=tk.N)
-
-    Button_general_5=tk.Button(
-        frame_general,
-        text="少々お待ちください",
-        font=("Helvetica", "25", "bold"),
-        foreground="red",
-        height=1,
-        width=35,
-        pady=5,
-        relief=tk.RAISED
-    )
-
-    Button_general_5.pack(anchor=tk.N)
-
-    Button_general_6=tk.Button(
-        frame_general,
-        text="は？おい俺は計数工学科やぞ",
-        font=("Helvetica", "25", "bold"),
-        foreground="red",
-        height=1,
-        width=35,
-        pady=5,
-        relief=tk.RAISED
-    )
-
-    Button_general_6.pack(anchor=tk.N)
-
-    Button_general_7=tk.Button(
-        frame_general,
-        text="その他",
-        font=("Helvetica", "25", "bold"),
-        height=1,
-        width=35,
-        pady=5,
-        relief=tk.RAISED
-    )
-
-    Button_general_7.pack(anchor=tk.N)
-
-
-    #説明書き用フレーム
-    frame_explain=tk.Frame(
+    """
+    frame_tale=tk.Frame(
         root,
-        #width=500,
-        #height=300,
-        bg="#f8faf2",   
+        #background='#00b0d9',
+        background="white"
     )
-    frame_explain.grid(row=4,column=2,columnspan=2,sticky=tk.NSEW)
+    frame_tale.grid(row=3,column=3,columnspan=2,sticky=tk.NSEW)
 
-    string_explain = tk.Label(
-        frame_explain,
-        text=u"rityo_math最高！（説明書き等）", 
-        foreground='#00b0d9', 
-        background='#FFFFFF',
-        font=("Helvetica", "25", "bold"),
+
+    string_tale = tk.Label(
+        frame_tale,
+        text=u"aphacks",
+        foreground="white",
+        background='#00b0d9',
+        font=("ＭＳ Ｐゴシック", "15", "bold"),
         height=1,
-        width=30
+        width=15,
     )
-    string_explain.pack(anchor=tk.N,side=tk.TOP)
+    string_tale.pack(anchor=tk.E,side=tk.TOP,ipady=10,)
+    """
+    
 
     if speaking_queue is not None:
         # Queueを介して喋る内容を受け取る
