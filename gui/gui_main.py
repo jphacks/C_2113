@@ -33,7 +33,49 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     global speaking_string
     speaking_string=tk.StringVar(value="デフォルト")
     listening_string=tk.StringVar(value="デフォルト")
-        
+    
+    # lineに保存する文面の管理
+    line_text = [{
+        "mode": None, 
+        "text_left": tk.StringVar(value=""), 
+        "text_right": tk.StringVar(value="")
+        } for _ in range(15)]
+    # log出力用
+    log_text = []
+    # line_textに新しい文面が追加されたときの処理
+    def line_text_push(mode, text):
+        isFull = (line_text[-1]["mode"] is not None)
+        for i in range(15):
+            if line_text[i]["mode"] is None or i == 14:
+                _line_text_set(i, mode, text)
+                return
+            elif isFull and line_text[i+1]["mode"] == "listen":
+                _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_left"].get())
+            elif isFull and line_text[i+1]["mode"] == "speak":
+                _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_right"].get())
+
+    def _line_text_set(idx, mode, text):
+        line_text[idx]["mode"] = mode
+        if mode == "listen":
+            line_text[idx]["text_left"].set(text)
+            string_LINE_left[idx]["background"] = "#afecb9"
+            string_LINE_left[idx]["width"] = 30
+            string_LINE_left[idx].grid_forget()
+            string_LINE_left[idx].grid(row=idx, column=0, columnspan=5)
+            string_LINE_right[idx]["background"] = "#ffffff"
+            string_LINE_right[idx]["width"] = 6
+            string_LINE_right[idx].grid_forget()
+            string_LINE_right[idx].grid(row=idx, column=5)
+        else:
+            line_text[idx]["text_right"].set(text)
+            string_LINE_left[idx]["background"] = "#ffffff"
+            string_LINE_left[idx]["width"] = 6
+            string_LINE_left[idx].grid_forget()
+            string_LINE_left[idx].grid(row=idx, column=0)
+            string_LINE_right[idx]["background"] = "#86d792"
+            string_LINE_right[idx]["width"] = 30
+            string_LINE_right[idx].grid_forget()
+            string_LINE_right[idx].grid(row=idx, column=1, columnspan=5)
 
     #プロダクトタイトル
     frame_title=tk.Frame(
@@ -140,19 +182,29 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     )
     frame_LINE.grid(row=2,column=0,columnspan=2,rowspan=2,padx=8,sticky=tk.NSEW)
 
-    #LINE表示用
-    string_LINE= tk.Label(
+    string_LINE_left = [tk.Label(
         frame_LINE,
-        text=u" 1 \n 2 \n 3 \n 4 \n 5 \n 6 \n 7 \n 8 \n 9 \n 10 \n 11 \n 12 \n 13 \n 14 \n 15 " , 
+        textvariable=line_text[i]["text_left"], 
         foreground='#000000', 
         background="#ffffff",
-        font=("Helvetica", "25", ),
-        height=15,          
-        width=35
-    )
+        font=("Helvetica", "20", "bold"),
+        height=1,          
+        width=30
+    ) for i in range(15)]
+    string_LINE_right = [tk.Label(
+        # frame_LINE_right,
+        frame_LINE,
+        textvariable=line_text[i]["text_right"], 
+        foreground='#000000', 
+        background="#ffffff",
+        font=("Helvetica", "20", "bold"),
+        height=1,          
+        width=6
+    ) for i in range(15)]
 
-    string_LINE.pack(anchor=tk.N,side=tk.TOP,)
-
+    for i in range(15):
+        string_LINE_left[i].grid(row=i,column=0,columnspan=5)
+        string_LINE_right[i].grid(row=i,column=5)
 
     #ボタンが押されたときの関数
     #発声文章リストを受け取る
@@ -197,6 +249,8 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
                     sub_root.destroy()
                     speak_txt = list[v.get()]
                     tts_q.put(speak_txt)
+                    line_text_push("speak", speak_txt)
+                    log_text.append(f"You: {speak_txt}")
                     speaking_string.set(speak_txt)
 
                 return lambda:inner_destroy(tts_q)
@@ -292,7 +346,11 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
             global speaking_string
             nonlocal temp_v
             sub_root.destroy()
-            speaking_string.set(temp_v.get())
+
+            temp_v_text = temp_v.get()
+            line_text_push("speak", temp_v_text)
+            log_text.append(f"You: {temp_v_text}")
+            speaking_string.set(temp_v_text)
             
         
 
@@ -329,6 +387,8 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
 
     def speaking_Button_quick(text):
         def inner_speaking_Button_quick():
+            line_text_push("speak", text)
+            log_text.append(f"You: {text}")
             speaking_string.set(text)
         return inner_speaking_Button_quick
 
@@ -442,6 +502,8 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
                     speak_time = data.sec
                     n = len(txt)
                     for i in range(1, n+1):
+                        line_text_push("speak", txt[:i])
+                        log_text.append(f"You: {txt[:i]}")
                         speaking_string.set(txt[:i])
                         time.sleep(speak_time / n)
                 except Empty:
@@ -458,6 +520,8 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
                     txt = q.get(timeout=100.0)
                     n = len(txt)
                     for i in range(1, n+1):
+                        line_text_push("listen", txt[:i])
+                        log_text.append(f"Phone: {txt[:i]}")
                         listening_string.set(txt[:i])
                         time.sleep(1.0 / n)
                 except Empty:
@@ -465,9 +529,15 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
 
         listening_thread = Thread(target=lambda:listening_watcher(listening_queue))
         listening_thread.start()
+    
+    def on_closing():
+        with open('logfile.txt', 'w', encoding='UTF-8') as f:
+            f.write("\n".join(map(str,log_text)))
+        root.destroy()
+
+    root.protocol("WM_DELETE_WINDOW", on_closing)
 
     return root
-
 
 if __name__ == '__main__': # このファイルが直接呼ばれたときだけ以下を呼ぶ
     buttons = []

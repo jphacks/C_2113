@@ -5,5 +5,5 @@
 
 ## ignore auto-created files
 */__pycache__/*
-
+pipfile
 # allow
