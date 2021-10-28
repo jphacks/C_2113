@@ -21,6 +21,11 @@ def main():
     add("記念日", str)
     add("支払いカード", str)
     add("ポイント", str)
+    add("子供の数", int)
+    add("電話番号", int)
+    add("席の位置", str)
+    add("苦手な食べ物", str)
+    add("移動手段", str)
     input_data = input_page.main(input_list)
 
     # Button Dataの作成
@@ -54,7 +59,22 @@ def main():
     ## ポイント Go to eat 9
     point = input_data["ポイント"]
     add("ポイント", [f"{point}は使えますか?",f"{point}対象店ですか？",f"{point}は貯まりますか？"])
-    ## 10~14
+    ## 子供 10
+    children = input_data["子供の数"]
+    add("子供", [f"子供が{children}人います。",f"{n}のうち子供が{children}です。",f"{children}人子供がいますが大丈夫ですか。"])
+    ## 電話番号 11
+    phone = input_data["電話番号"]
+    add("電話", [f"電話番号は{phone}なります。",f"電話番号は{phone}です。",f"ケータイは{phone}です。"])
+    ## 席の位置 12
+    place = input_data["席の位置"]
+    add("席",[f"席は{place}の近くでお願いします。",f"{place}近くに席をお願いします。",f"{place}側にお願いします。"])
+    ## 苦手な食べ物 13
+    hate = input_data["苦手な食べ物"]
+    add("苦手",[f"{hate}は食べられません。",f"{hate}が入った食べ物は避けてください。",f"{hate}が嫌いです。"])
+    ## 移動手段 14
+    transportation = input_data["移動手段"]
+    add("移動手段",[f"{transportation}で向かいます。",f"{transportation}を使います。","駐車場はありますか?"])
+
     ##general(12のセリフ) 1~12
     for i in range(18-len(buttons)):
         buttons.append(gui.ButtonData("人数", [f'{i}人でお願いします' for i in range(18)]))
