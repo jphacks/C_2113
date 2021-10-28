@@ -47,14 +47,19 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     # line_textに新しい文面が追加されたときの処理
     def line_text_push(mode, text):
         isFull = (line_text[-1]["mode"] is not None)
-        for i in range(line_num):
+        # for i in range(line_num):
+        i = 0
+        while i < line_num:
+            print(mode, text, isFull)
+            print(line_text)
             if line_text[i]["mode"] is None or i == line_num-1:
                 _line_text_set(i, mode, text)
                 return
             elif isFull and line_text[i+1]["mode"] == "listen":
-                _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_left"].get())
+                add = _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_left"].get())
             elif isFull and line_text[i+1]["mode"] == "speak":
-                _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_right"].get())
+                add = _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_right"].get())
+            i += add
 
     def _line_text_set(idx, mode, text, isMiddle=False):
         count = 0
@@ -62,12 +67,12 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
             count += _char_length(text[i])
             if count >= 85 and i < len(text)-1:
                 _line_text_put(idx,mode,text[:i+1],isMiddle=True)
-                _line_text_set(idx,mode,text[i+1:],isMiddle=True)
-                return
+                return _line_text_set(idx,mode,text[i+1:],isMiddle=True)+1
         if (not isMiddle) and count < 51:
             _line_text_put(idx,mode,text, grid_length=3)
         else:
-             _line_text_put(idx,mode,text)
+            _line_text_put(idx,mode,text)
+        return 1
 
     def _line_text_put(idx, mode, text, isMiddle=False, grid_length=5):
         line_text[idx]["mode"] = mode
