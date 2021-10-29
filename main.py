@@ -15,7 +15,6 @@ def main():
     add("人数", int)
     add("コース名", str)
     add("何時から", int)
-    add("持ち帰り", str)
     add("日付(月)", int)
     add("日付(日)", int)
     add("記念日", str)
@@ -23,9 +22,7 @@ def main():
     add("ポイント", str)
     add("子供の数", int)
     add("電話番号", int)
-    add("席の位置", str)
     add("苦手な食べ物", str)
-    add("移動手段", str)
     input_data = input_page.main(input_list)
 
 
@@ -89,8 +86,8 @@ def main():
 
 
     ##general(12のセリフ) 1~12
-    #for i in range(18-len(buttons)):
-    #    buttons.append(gui.ButtonData("人数", [f'{i}人でお願いします' for i in range(18)]))
+    for i in range(18-len(buttons)):
+        buttons.append(gui.ButtonData("人数", [f'{i}人でお願いします' for i in range(18)]))
 
     
 
