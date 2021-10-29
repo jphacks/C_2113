@@ -652,6 +652,7 @@ if __name__ == '__main__': # このファイルが直接呼ばれたときだけ
         
     tts_que = Queue()
     speaking_queue = Queue()
+    listening_queue = Queue()
     def tts_mock(q, q2):
         while True:
             if q.empty():
@@ -662,8 +663,15 @@ if __name__ == '__main__': # このファイルが直接呼ばれたときだけ
             print(f'[[TTS]] {txt}')
     tts_thread = Thread(target=lambda:tts_mock(tts_que, speaking_queue))
     tts_thread.start()
+    def test_listen(q):
+        while True:
+            txt = input()
+            print(f'[[LISTEN]]',txt)
+            q.put(txt)
+    listen_thread = Thread(target=lambda:test_listen(listening_queue))
+    listen_thread.start()
 
-    root = main(tts_que, get_test_data(), speaking_queue)
+    root = main(tts_que, get_test_data(), speaking_queue, listening_queue)
     root.mainloop()
     
 
