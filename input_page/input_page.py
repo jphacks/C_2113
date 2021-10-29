@@ -56,9 +56,9 @@ class Application(tk.Frame):
         #タイトル(mainと同一にする)
         string_title = tk.Label(
             text=u"rityo_math（プロダクト名）", 
-            foreground='#00b0d9', 
-            background='#FFFFFF',
-            font=("Helvetica", "50", "bold"),
+            foreground='#FFFFFF', 
+            background='#00b0d9',
+            font=("ＭＳ Ｐゴシック", "35", "bold"),
             height=1,
             width=30
         )
@@ -75,7 +75,7 @@ class Application(tk.Frame):
         )
         string_directions.pack(anchor=tk.N,side=tk.TOP)
 
-        self.create_weget(input_form_list)
+        
 
         #オマケ
         string_explain = tk.Label(
@@ -88,29 +88,43 @@ class Application(tk.Frame):
         )
         string_explain.pack(anchor=tk.N,side=tk.BOTTOM)
 
+        self.create_weget(input_form_list)
+
     def create_weget(self, input_form_list):
+        # 左側のフレーム
+        frame_left = tk.Frame(self.master,background="#e6e6e6")
+        # 右側のフレーム
+        frame_right = tk.Frame(self.master,background="#e6e6e6")
         
-        
+        # in_ = frame_right
         for input_form in input_form_list:
+            l = input_form_list.index(input_form)
+            if l<len(input_form_list)/2:
+                frame_place = frame_left
+            else:
+                frame_place = frame_right
             if input_form.input_type is int:
                 Static = tk.Label(text=input_form.label,font = ("Helvetica", "20"))
-                Static.pack()
+                Static.pack(in_ = frame_place)
                 EditBox = tk.Entry(width=25,textvariable=tk.IntVar())
-                EditBox.pack()
+                EditBox.pack(in_ = frame_place)
                 self.EditBox_dict[input_form.label]=EditBox
                 
             elif input_form.input_type is str:
                 Static = tk.Label(text=input_form.label,font = ("Helvetica", "20"))
-                Static.pack()
+                Static.pack(in_ = frame_place)
                 EditBox = tk.Entry(width=25,textvariable=tk.StringVar())
-                EditBox.pack()
+                EditBox.pack(in_ = frame_place)
                 self.EditBox_dict[input_form.label]=EditBox
-                
+        
         #ボタン
         self.Button = tk.Button(text=u'決定')
         self.Button.bind("<Button-1>",self.decision) 
-        self.Button.pack()
+        self.Button.pack(side = tk.BOTTOM)
 
+        # フレームの配置
+        frame_left.pack(side = tk.LEFT, expand = True)
+        frame_right.pack(side = tk.LEFT, expand = True)
 
     def decision(self,event):
         self.Send_data(event)

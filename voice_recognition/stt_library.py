@@ -86,6 +86,8 @@ def listen_print_loop(responses, output_queue: queue.Queue, convert):
             num_chars_printed = 0
 
 def stt_main(output_queue: queue.Queue = None, convert: bool = False):
+    print("[[VOICE RECOGNITION]]", "sst start.")
+
     # See http://g.co/cloud/speech/docs/languages
     # for a list of supported languages.
     language_code = "ja-JP"  # a BCP-47 language tag
