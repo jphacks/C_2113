@@ -30,7 +30,7 @@ def main():
 
     # Button Dataの作成
     buttons = []
-    add = lambda name,choices:buttons.append(ButtonData(name, choices))
+    add = lambda name,choices:buttons.append(gui.ButtonData(name, choices))
     ## 名前 1
     name = input_data["名前"]
     add("名前", [f"{name}と申します", f"{name}です", f"{name}ですけれども", f"{name}です、先日はお世話になりました"])
