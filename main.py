@@ -7,7 +7,7 @@ import tts
 import voice_recognition
 import input_page
 
-def main():
+def main(debug_mode = False):
     # 入力画面
     #  入力内容リスト(List[InputForm])を作ると良い
     input_list = []
@@ -71,15 +71,16 @@ def main():
     listen = queue.Queue()
 
     # ttsの呼び出し
-    tts_thread = threading.Thread(target = lambda:tts.main(tts_queue, speak))
+    tts_thread = Thread(target = lambda:tts.main(tts_queue, speak, debug_mode))
     tts_thread.start()
 
     # 音声認識の呼び出し
-    #   [obsolete]
-    #   vrec_thread = Thread(target=lambda:voice_recognition.main(listen))
-    #   vrec_thread.start()
-    stt_thread = threading.Thread(target = lambda:voice_recognition.stt_main(listen,True))
-    stt_thread.start()
+    if debug_mode:
+        vrec_thread = Thread(target=lambda:voice_recognition.main(listen))
+        vrec_thread.start()
+    else:
+        stt_thread = Thread(target = lambda:voice_recognition.stt_main(listen,True))
+        stt_thread.start()
 
     # メイン画面の呼び出し
     root = gui.main(tts_queue, buttons, speak, listen)
@@ -122,5 +123,5 @@ def test_gui_integration():
     root.mainloop()
 
 if __name__ == '__main__':
-   main() 
+   main(True) 
    # test_gui_integration()

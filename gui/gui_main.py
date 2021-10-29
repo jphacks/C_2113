@@ -250,7 +250,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
                     tts_q.put(speak_txt)
                     line_text_push("speak", speak_txt)
                     log_text.append(f"You: {speak_txt}")
-                    speaking_string.set(speak_txt)
+                    # speaking_string.set(speak_txt)
 
                 return lambda:inner_destroy(tts_q)
 
@@ -304,7 +304,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
 
     
 
-    def speaking_typing_popup():
+    def speaking_typing_popup(tts_q=tts_queue):
         #popup window
         global sub_root
         global speaking_string
@@ -339,7 +339,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         typing_box.pack()
 
         
-        def destroy_typing_func():
+        def destroy_typing_func(tts_q):
             
             global sub_root
             global speaking_string
@@ -349,7 +349,8 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
             temp_v_text = temp_v.get()
             line_text_push("speak", temp_v_text)
             log_text.append(f"You: {temp_v_text}")
-            speaking_string.set(temp_v_text)
+            # speaking_string.set(temp_v_text)
+            tts_q.put(temp_v_text)
             
         
 
@@ -359,7 +360,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
             font=("Helvetica", "25", "bold"),
             relief=tk.RAISED,
             pady=5,
-            command=destroy_typing_func
+            command=lambda:destroy_typing_func(tts_q)
         )
         sub_final_Button.pack()
 
@@ -384,12 +385,13 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     #一般的な言葉のボタン
     #赤字は即発声をイメージ
 
-    def speaking_Button_quick(text):
-        def inner_speaking_Button_quick():
+    def speaking_Button_quick(text, tts_q=tts_queue):
+        def inner_speaking_Button_quick(tts_q):
             line_text_push("speak", text)
             log_text.append(f"You: {text}")
-            speaking_string.set(text)
-        return inner_speaking_Button_quick
+            # speaking_string.set(text)
+            tts_q.put(text)
+        return lambda:inner_speaking_Button_quick(tts_q)
 
 
 

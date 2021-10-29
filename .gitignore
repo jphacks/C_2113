@@ -3,6 +3,9 @@
 *.wav
 *.mp3
 
+## ignoer log
+logfile.txt
+
 ## ignore auto-created files
 */__pycache__/*
 pipfile
