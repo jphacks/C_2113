@@ -7,6 +7,11 @@ import subprocess as sp
 from playsound import playsound
 import queue
 
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../common'))
+from interface_struct import SpeakingData
+
 # copy from https://qiita.com/to_obara/items/d8d5c92c2ea85a197e2d
 
 
@@ -103,6 +108,6 @@ def tts_and_speak(txt: str, id: int, output_queue: queue.Queue = None) -> None:
 	ofile = "tts" + str(id) + ".mp3"
 	playtime = gtts(txt, ofile)
 	if (output_queue is not None):
-		output_queue.put(playtime)
+		output_queue.put(SpeakingData(txt=txt, sec=playtime))
 	playsound(ofile)
 
