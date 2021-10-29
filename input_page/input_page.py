@@ -49,12 +49,14 @@ class Application(tk.Frame):
         super().__init__(master)
         self.frame = master
         self.frame.title(u"input")
-        self.frame.geometry("1500x750")
+        self.frame.geometry("750x600")
+        self.frame.config(background="white")
         self.data={}
         self.EditBox_dict={}
 
         #タイトル(mainと同一にする)
         string_title = tk.Label(
+            self.frame,
             text=u"rityo_math（プロダクト名）", 
             foreground='#FFFFFF', 
             background='#00b0d9',
@@ -62,20 +64,28 @@ class Application(tk.Frame):
             height=1,
             width=30
         )
-        string_title.pack(anchor=tk.N,side=tk.TOP)
+        string_title.pack(anchor=tk.N,side=tk.TOP,fill=tk.X)
 
         #説明文
         string_directions = tk.Label(
+            self.frame,
             text=u"必要事項を記入後、<決定>ボタンを押してください。",
-            font=("Helvetica", "30", "bold"),
+            font=("Helvetica", "20", ),
             bg="#edf7f5",
-            highlightthickness=3, 
-            highlightcolor="red",
-            takefocus=True
+            bd=0
         )
-        string_directions.pack(anchor=tk.N,side=tk.TOP)
+        string_directions.pack(anchor=tk.N,side=tk.TOP,fill=tk.X,ipady=5)
 
-        
+        string_tale = tk.Label(
+            self.frame,
+            text=u"aphacks",
+            foreground="white",
+            background='#00b0d9',
+            font=("ＭＳ Ｐゴシック", "15", "bold"),
+            height=1,
+            width=10,
+        )
+        string_tale.pack(anchor=tk.E,side=tk.BOTTOM)        
 
         #オマケ
         string_explain = tk.Label(
@@ -86,15 +96,15 @@ class Application(tk.Frame):
             height=1,
             width=30
         )
-        string_explain.pack(anchor=tk.N,side=tk.BOTTOM)
+        string_explain.pack(anchor=tk.S,side=tk.BOTTOM)
 
         self.create_weget(input_form_list)
 
     def create_weget(self, input_form_list):
         # 左側のフレーム
-        frame_left = tk.Frame(self.master,background="#e6e6e6")
+        frame_left = tk.Frame(self.master,background="white")
         # 右側のフレーム
-        frame_right = tk.Frame(self.master,background="#e6e6e6")
+        frame_right = tk.Frame(self.master,background="white")
         
         # in_ = frame_right
         for input_form in input_form_list:
@@ -104,21 +114,21 @@ class Application(tk.Frame):
             else:
                 frame_place = frame_right
             if input_form.input_type is int:
-                Static = tk.Label(text=input_form.label,font = ("Helvetica", "20"))
+                Static = tk.Label(text=input_form.label,font = ("Helvetica", "20"),bg="white")
                 Static.pack(in_ = frame_place)
                 EditBox = tk.Entry(width=25,textvariable=tk.IntVar())
                 EditBox.pack(in_ = frame_place)
                 self.EditBox_dict[input_form.label]=EditBox
                 
             elif input_form.input_type is str:
-                Static = tk.Label(text=input_form.label,font = ("Helvetica", "20"))
+                Static = tk.Label(text=input_form.label,font = ("Helvetica", "20"),bg="white")
                 Static.pack(in_ = frame_place)
                 EditBox = tk.Entry(width=25,textvariable=tk.StringVar())
                 EditBox.pack(in_ = frame_place)
                 self.EditBox_dict[input_form.label]=EditBox
         
         #ボタン
-        self.Button = tk.Button(text=u'決定')
+        self.Button = tk.Button(text=u'決定',bg="white")
         self.Button.bind("<Button-1>",self.decision) 
         self.Button.pack(side = tk.BOTTOM)
 

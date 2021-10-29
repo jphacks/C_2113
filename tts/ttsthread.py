@@ -119,7 +119,7 @@ def main(txt_queue: queue.Queue, output_queue: queue.Queue, debug: bool = False)
             txt = txt_queue.get(timeout=500.0)
             print("[[TTS]]", "get:", txt)
             if debug:
-                output_queue.put(SpeakingData(txt=txt, sec=0.1*len(txt)))
+                output_queue.put(SpeakingData(txt=txt, sec=0.02*len(txt)))
                 print("[[TTS]]", "speak:", txt)
             else:
                 tts_and_speak(txt, i, output_queue)
