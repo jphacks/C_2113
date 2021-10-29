@@ -6,8 +6,9 @@
 ## ignore log
 logfile.txt
 
-## ignore vim swp file
+## ignore editor swp file
 *.swp
+.DS_Store
 
 ## ignore auto-created files
 */__pycache__/*

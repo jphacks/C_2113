@@ -25,7 +25,7 @@ def get_token() -> str:
 	             stdout=sp.PIPE,
 	             stderr=sp.PIPE,
 	             encoding='utf-8')
-	print("[[TTS]]", f"error=[res.stderr]")
+	print("[[TTS]]", f"error=[{res.stderr}]")
 	return res.stdout.strip()
 
 
