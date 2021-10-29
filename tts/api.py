@@ -19,7 +19,7 @@ def get_token() -> str:
 	             stdout=sp.PIPE,
 	             stderr=sp.PIPE,
 	             encoding='utf-8')
-	print("[[TTS]]" + res.stderr)
+	print("[[TTS]]", res.stderr)
 	return res.stdout.strip()
 
 
@@ -89,8 +89,8 @@ def gtts(txt: str, ofile: str) -> None:
 			print("[[TTS]]""done..")
 	except urllib.error.URLError as e:
 		print("[[TTS]]""error happen...")
-		print("[[TTS]]" + e.reason)
-		print("[[TTS]]" + e)
+		print("[[TTS]]", e.reason)
+		print("[[TTS]]", e)
 
 
 if __name__ == "__main__":
