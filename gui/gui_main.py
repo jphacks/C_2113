@@ -590,6 +590,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
    
 
     if speaking_queue is not None:
+        print("[[GUI MAIN]]", "watch speaknig string...")
         # Queueを介して喋る内容を受け取る
         def speaking_watcher(q):
             while True:
@@ -611,6 +612,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         speaking_thread.start()
 
     if listening_queue is not None:
+        print("[[GUI MAIN]]", "watch listenig string...")
         # Queueを介して認識内容を受け取る
         def listening_watcher(q):
             while True:
@@ -655,7 +657,7 @@ if __name__ == '__main__': # このファイルが直接呼ばれたときだけ
     tts_thread = Thread(target=lambda:tts_mock(tts_que, speaking_queue))
     tts_thread.start()
 
-    root = main(tts_que, get_test_data())
+    root = main(tts_que, get_test_data(), speaking_queue)
     root.mainloop()
     
 
