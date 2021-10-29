@@ -70,7 +70,7 @@ def main(debug_mode = False, skip_input=False, tts_skip=False, stt_skip=False):
     ## 日付 6
     month = input_data["日付(月)"]
     date = input_data["日付(日)"]
-    add("日付", [f"{month}月{date}日でお願いします。",f"{month}月{date}日に予約したいです。",f"{month}月{date}日の予約は可能ですか"])
+    add("日付", [f"{month}月{date}日の予約は可能ですか",f"{month}月{date}日でお願いします。",f"{month}月{date}日に予約したいです。"])
     ## 記念日 7
     aniversary = input_data["記念日"]
     add("誕生日", [f"{month}月{date}日は{aniversary}です。",f"{date}日は{aniversary}です。",f"{aniversary}をお祝いしたいと思っています。"])
