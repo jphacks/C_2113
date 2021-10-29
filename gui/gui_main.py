@@ -113,16 +113,17 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         # for i in range(line_num):
         i = 0
         for i in range(line_num):
-            add = 1
             if line_text[i]["mode"] is None or i == line_num-1:
                 _line_text_set(i, mode, text, SentencePart=SentencePart)
                 return
             elif isFull and line_text[i+1]["mode"] == "listen":
-                add = _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_left"].get(), SentencePart=line_text[i+1]["SentencePart"])
+                _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_left"].get(), SentencePart=line_text[i+1]["SentencePart"])
             elif isFull and line_text[i+1]["mode"] == "speak":
-                add = _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_right"].get(), SentencePart=line_text[i+1]["SentencePart"])
+                _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_right"].get(), SentencePart=line_text[i+1]["SentencePart"])
 
     def _line_text_set(idx, mode, text, SentencePart=0):# SentencePart==2ならセンテンス内（末尾かどうかはわからない）
+        line_text[idx]["text_left"].set("")
+        line_text[idx]["text_right"].set("")
         count = 0
         for i, c in enumerate(text):
             count += _char_length(text[i])
@@ -144,8 +145,12 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         else:
             line_text[idx]["SentencePart"] = SentencePart#そうでなければ1行で完結するセンテンス
         # print("[[LINE_set]]", count)
-        if SentencePart == 0 and count < 51:
+        if SentencePart == 0 and count < 35:
+            _line_text_put(idx,mode,text, grid_length=2, SentencePart=line_text[idx]["SentencePart"])
+        elif SentencePart == 0 and count < 55:
             _line_text_put(idx,mode,text, grid_length=3, SentencePart=line_text[idx]["SentencePart"])
+        elif SentencePart == 0 and count < 75:
+            _line_text_put(idx,mode,text, grid_length=4, SentencePart=line_text[idx]["SentencePart"])
         else:
             _line_text_put(idx,mode,text, SentencePart=line_text[idx]["SentencePart"])
 
