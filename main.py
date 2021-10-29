@@ -3,12 +3,11 @@ from threading import Thread
 import time
 
 import gui
+import tts
 import voice_recognition
 import input_page
 
-def main():
-    # 入力画面
-    #  入力内容リスト(List[InputForm])を作ると良い
+def get_input_list():
     input_list = []
     add = lambda name,type_:input_list.append(input_page.InputForm(name,type_))
     add("名前", str)
@@ -23,11 +22,32 @@ def main():
     add("子供の数", int)
     add("電話番号", int)
     add("苦手な食べ物", str)
-    input_data = input_page.main(input_list)
+    add("席の位置", str)
+    return input_list
 
+def get_test_input():
+    dic = {}
+    for input_form in get_input_list():
+        if input_form.input_type is int:
+            dic[input_form.label] = 1
+        elif input_form.input_type is str:
+            dic[input_form.label] = f"[{input_form.label}]"
+    return dic
 
-    #以下をmainにする
+def call_input():
+    # 入力画面
+    input_list = get_input_list()
+    return input_page.main(input_list)
 
+def main(debug_mode = False, skip_input=False, tts_skip=False, stt_skip=False):
+    if skip_input and debug_mode:
+        print("[[MAIN]]", "skip input form")
+        input_data = get_test_input()
+    else:
+        input_data = call_input()
+
+    print("[[MAIN]] INPUT DATA is below.")
+    print(input_data)
     # Button Dataの作成
     buttons = []
     add = lambda name,choices:buttons.append(gui.ButtonData(name, choices))
@@ -83,26 +103,25 @@ def main():
         "時間がありませんので、なるべく早くお願いします。","早い時間におねがいします。","いつもお世話になっております。"])
 
 
-
-
-    ##general(12のセリフ) 1~12
-    for i in range(18-len(buttons)):
-        buttons.append(gui.ButtonData("人数", [f'{i}人でお願いします' for i in range(18)]))
-
-    
-
     # 共有変数の作成
     tts_queue = queue.Queue()
     speak = queue.Queue()
     listen = queue.Queue()
 
-    # 音声認識の呼び出し
-    vrec_thread = Thread(target=lambda:voice_recognition.main(listen))
-    vrec_thread.start()
-
     # ttsの呼び出し
+    tts_thread = Thread(target = lambda:tts.main(tts_queue, speak, tts_skip and debug_mode))
+    tts_thread.start()
+
+    # 音声認識の呼び出し
+    if stt_skip and debug_mode:
+        vrec_thread = Thread(target=lambda:voice_recognition.main(listen))
+        vrec_thread.start()
+    else:
+        stt_thread = Thread(target = lambda:voice_recognition.stt_main(listen,True))
+        stt_thread.start()
 
     # メイン画面の呼び出し
+    print("[[MAIN]]", "call gui.main")
     root = gui.main(tts_queue, buttons, speak, listen)
     root.mainloop() # ここで待機
 
@@ -120,16 +139,18 @@ def test_gui_integration():
 
     def tester():
         script = [
-            ["はい、こちら応物ピザ本郷店でございます",1.5],
+            ["はい、こちら応物ピザ",0.5, False],
+            ["はい、こちら応物ピザ本郷店でございます",1.0, True],
             ["出前をお願いしたいのですが", 1],
-            ["かしこまりました。\nメニューはいかがされますか？", 1.2],
+            ["かしこまりました。", 0.6,False],
+            ["かしこまりました。\nメニューはいかがされますか？", 0.6, True],
             ["マルチンゲールのLサイズでお願いします", 1.5],
             ["かしこまりました", 1.3],
         ]
         time.sleep(3.0)
-        for i,comment in enumerate(script):
-            if (i%2)==0:
-                listen.put(comment[0])
+        for comment in script:
+            if len(comment) > 2:
+                listen.put(gui.ListeningData(txt=comment[0], is_final=comment[2]))
             else:
                 speak.put(gui.SpeakingData(txt=comment[0], sec=comment[1]))
             time.sleep(comment[1])
@@ -140,5 +161,9 @@ def test_gui_integration():
 
     root.mainloop()
 
-if __name__ == '__main__':
-   main() 
+if __name__ == '__main__': 
+    main(debug_mode=True, skip_input=True, tts_skip=True, stt_skip=True) 
+
+
+
+   # test_gui_integration()

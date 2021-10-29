@@ -7,6 +7,11 @@ import subprocess as sp
 from playsound import playsound
 import queue
 
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../common'))
+from interface_struct import SpeakingData
+
 # copy from https://qiita.com/to_obara/items/d8d5c92c2ea85a197e2d
 
 
@@ -20,7 +25,7 @@ def get_token() -> str:
 	             stdout=sp.PIPE,
 	             stderr=sp.PIPE,
 	             encoding='utf-8')
-	print(res.stderr)
+	print("[[TTS]]", f"error=[res.stderr]")
 	return res.stdout.strip()
 
 
@@ -90,12 +95,12 @@ def gtts(txt: str, ofile: str) -> int:
 			dat = response.read()
 			body = json.loads(dat)
 			ret = output_mp3(body, ofile)
-			print("done..")
+			print("[[TTS]]", "done..")
 		return ret
 	except urllib.error.URLError as e:
-		print("error happen...")
-		print(e.reason)
-		print(e)
+		print("[[TTS]]", "error happen...")
+		print("[[TTS]]", e.reason)
+		print("[[TTS]]", e)
 		return -1
 
 
@@ -103,6 +108,24 @@ def tts_and_speak(txt: str, id: int, output_queue: queue.Queue = None) -> None:
 	ofile = "tts" + str(id) + ".mp3"
 	playtime = gtts(txt, ofile)
 	if (output_queue is not None):
-		output_queue.put(playtime)
+		output_queue.put(SpeakingData(txt=txt, sec=playtime*1e-3))
 	playsound(ofile)
+
+def main(txt_queue: queue.Queue, output_queue: queue.Queue, debug: bool = False) -> None:
+    print("[[TTS]]", f"debug={debug}")
+    i = 0
+    while    True:
+        try:
+            txt = txt_queue.get(timeout=500.0)
+            print("[[TTS]]", "get:", txt)
+            if debug:
+                output_queue.put(SpeakingData(txt=txt, sec=0.1*len(txt)))
+                print("[[TTS]]", "speak:", txt)
+            else:
+                tts_and_speak(txt, i, output_queue)
+            i += 1
+        except:
+            print("[[TTS]]", "get text timeout.")
+            continue
+
 
