@@ -103,46 +103,48 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         "mode": None, 
         "text_left": tk.StringVar(value=""), 
         "text_right": tk.StringVar(value=""), 
-        "isMiddle": False
+        "SentencePart": 0# 0: 1行で完結，1: 複数行の最終行以外，2: 複数行の最終行
         } for _ in range(line_num)]
     # log出力用
     log_text = []
     # line_textに新しい文面が追加されたときの処理
-    def line_text_push(mode, text):
+    def line_text_push(mode, text, SentencePart=0):
         isFull = (line_text[-1]["mode"] is not None)
         # for i in range(line_num):
         i = 0
-        while i < line_num:
+        for i in range(line_num):
             add = 1
             if line_text[i]["mode"] is None or i == line_num-1:
-                _line_text_set(i, mode, text, isMiddle=line_text[i]["isMiddle"])
+                _line_text_set(i, mode, text, SentencePart=SentencePart)
                 return
             elif isFull and line_text[i+1]["mode"] == "listen":
-                add = _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_left"].get(), isMiddle=line_text[i+1]["isMiddle"])
+                add = _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_left"].get(), SentencePart=line_text[i+1]["SentencePart"])
             elif isFull and line_text[i+1]["mode"] == "speak":
-                add = _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_right"].get(), isMiddle=line_text[i+1]["isMiddle"])
-            i += add
+                add = _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_right"].get(), SentencePart=line_text[i+1]["SentencePart"])
 
-    def _line_text_set(idx, mode, text, isMiddle=False):
-        line_text[idx]["isMiddle"] = isMiddle # 長さが短くても，切り取られたあとのものである可能性があるためFalseとは限らない
+    def _line_text_set(idx, mode, text, SentencePart=0):# SentencePart==1ならセンテンス内
         count = 0
         for i, c in enumerate(text):
             count += _char_length(text[i])
             if count >= 85 and i < len(text)-1:
-                line_text[idx]["isMiddle"] = True
-                _line_text_put(idx,mode,text[:i+1],isMiddle=True)
-                return _line_text_set(idx+1,mode,text[i+1:])+1
-        print(count)
-        if (not isMiddle) and count < 51:
-            _line_text_put(idx,mode,text, grid_length=3, isMiddle=isMiddle)
+                line_text[idx]["SentencePart"] = 1
+                _line_text_put(idx,mode,text[:i+1],SentencePart=line_text[idx]["SentencePart"])
+                line_text_push(mode,text[i+1:], SentencePart=1)
+                return
+        if SentencePart == 1:
+            line_text[idx]["SentencePart"] = 2#センテンス内でここに到達したらセンテンスの末尾ということ
         else:
-            _line_text_put(idx,mode,text, isMiddle=isMiddle)
-        return 1
+            line_text[idx]["SentencePart"] = 0#そうでなければ1行で完結するセンテンス
+        print("[[LINE_set]]", count)
+        if SentencePart == 0 and count < 51:
+            _line_text_put(idx,mode,text, grid_length=3, SentencePart=line_text[idx]["SentencePart"])
+        else:
+            _line_text_put(idx,mode,text, SentencePart=line_text[idx]["SentencePart"])
 
-    def _line_text_put(idx, mode, text, isMiddle=False, grid_length=5):
-        print(isMiddle, grid_length)
+    def _line_text_put(idx, mode, text, SentencePart=0, grid_length=5):
+        print("[[LINE_put]]", SentencePart, grid_length)
         line_text[idx]["mode"] = mode
-        if isMiddle:
+        if SentencePart == 1:
             pad_below = 0
         else:
             pad_below = 3
@@ -151,21 +153,21 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
             line_text[idx]["text_left"].set(text)
             #string_LINE_left[idx]["background"] = "#afecb9"
             string_LINE_left[idx]["background"] ="#B9E2A2",
-            string_LINE_left[idx]["width"] = 30
+            string_LINE_left[idx]["width"] = 6*grid_length
             string_LINE_left[idx].grid_forget()
             string_LINE_left[idx].grid(row=upper_margin+idx, column=0, columnspan=grid_length, pady=(0,pad_below))
             string_LINE_right[idx]["background"] = "#A7B3D3"
-            string_LINE_right[idx]["width"] = 6
+            string_LINE_right[idx]["width"] = 6*(6-grid_length)
             string_LINE_right[idx].grid_forget()
-            string_LINE_right[idx].grid(row=upper_margin+idx, column=grid_length, pady=(0,pad_below))
+            string_LINE_right[idx].grid(row=upper_margin+idx, column=grid_length,columnspan=6-grid_length, pady=(0,pad_below))
         else:
             line_text[idx]["text_right"].set(text)
             string_LINE_left[idx]["background"] = "#A7B3D3"
-            string_LINE_left[idx]["width"] = 6
+            string_LINE_left[idx]["width"] = 6*(6-grid_length)
             string_LINE_left[idx].grid_forget()
-            string_LINE_left[idx].grid(row=upper_margin+idx, column=0, pady=(0,pad_below))
+            string_LINE_left[idx].grid(row=upper_margin+idx, column=0, columnspan=6-grid_length, pady=(0,pad_below))
             string_LINE_right[idx]["background"] = "#B9E2A2"
-            string_LINE_right[idx]["width"] = 30
+            string_LINE_right[idx]["width"] = 6*grid_length
             string_LINE_right[idx].grid_forget()
             string_LINE_right[idx].grid(row=upper_margin+idx, column=6-grid_length, columnspan=grid_length, pady=(0,pad_below))
 
