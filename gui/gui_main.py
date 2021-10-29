@@ -165,7 +165,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         if mode == "listen":
             line_text[idx]["text_left"].set(text)
             #string_LINE_left[idx]["background"] = "#afecb9"
-            string_LINE_left[idx]["background"] ="#B9E2A2",
+            string_LINE_left[idx]["background"] ="#eff1eb",
             string_LINE_left[idx]["width"] = 6*grid_length
             string_LINE_left[idx].grid_forget()
             string_LINE_left[idx].grid(row=upper_margin+idx, column=0, columnspan=grid_length, pady=(0,pad_below))
