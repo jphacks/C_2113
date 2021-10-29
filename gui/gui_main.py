@@ -108,7 +108,6 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     log_text = []
     # line_textに新しい文面が追加されたときの処理
     def line_text_push(mode, text):
-        return
         isFull = (line_text[-1]["mode"] is not None)
         # for i in range(line_num):
         i = 0
