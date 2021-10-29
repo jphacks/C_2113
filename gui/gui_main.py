@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 import sys
+import os
 import tkinter as tk
 from tkinter import ttk
 from dataclasses import dataclass
@@ -8,17 +9,15 @@ from threading import Thread
 import time
 from queue import Queue, Empty
 
-
+# import interface dataclass from common directory
+sys.path.append(os.path.join(os.path.dirname(__file__), '../common'))
+from interface_struct import SpeakingData
+from interface_struct import ListeningData
 
 @dataclass
 class ButtonData:
     label: str
     choices: List[str]
-
-@dataclass
-class SpeakingData:
-    txt: str
-    sec: float
 
 def main(tts_queue, buttons, speaking_queue=None, listening_queue=None): 
 
@@ -517,13 +516,15 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         def listening_watcher(q):
             while True:
                 try:
-                    txt = q.get(timeout=100.0)
+                    result = q.get(timeout=100.0)
+                    txt = result.txt
                     n = len(txt)
                     for i in range(1, n+1):
-                        line_text_push("listen", txt[:i])
+                        if result.is_final:
+                            line_text_push("listen", txt[:i])
                         log_text.append(f"Phone: {txt[:i]}")
                         listening_string.set(txt[:i])
-                        time.sleep(1.0 / n)
+                        time.sleep(0.3 / n)
                 except Empty:
                     continue
 

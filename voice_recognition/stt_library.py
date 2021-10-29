@@ -2,6 +2,11 @@
 
 from __future__ import division
 
+import os
+import sys
+
+sys.path.append(os.path.dirname(__file__))
+
 import re
 
 from google.cloud import speech
@@ -9,11 +14,16 @@ from google.cloud import speech
 from googles_code import MicrophoneStream
 import queue
 
+# import interface dataclass from common directory
+sys.path.append(os.path.join(os.path.dirname(__file__), '../common'))
+from interface_struct import ListeningData
+
+
 # Audio recording parameters
 RATE = 16000
 CHUNK = int(RATE / 10)  # 100ms
 
-def listen_print_loop(responses, output_queue: queue.Queue):
+def listen_print_loop(responses, output_queue: queue.Queue, convert):
     """Iterates through server responses and prints them.
 
     The responses passed is a generator that will block until a response
@@ -52,7 +62,11 @@ def listen_print_loop(responses, output_queue: queue.Queue):
         # overwrite_chars = " " * (num_chars_printed - len(transcript))
 
         if (output_queue is not None):
-            output_queue.put(result)
+            if convert:
+                ret = ListeningData(txt=result.alternatives[0].transcript, is_final=result.is_final)
+                output_queue.put(result)
+            else:
+                output_queue.put(result)
         if not result.is_final:
             #  stdout には出力しない
             # sys.stdout.write(transcript + overwrite_chars + "\r")
@@ -61,17 +75,17 @@ def listen_print_loop(responses, output_queue: queue.Queue):
             num_chars_printed = len(transcript)
 
         else:
-            # print(transcript + overwrite_chars)
+            # print("[[VOICE RECOGNITION]]"transcript + overwrite_chars)
 
             # Exit recognition if any of the transcribed phrases could be
             # one of our keywords.
             if re.search(r"\b(認識終了)\b", transcript, re.I):
-                print("Exiting..")
+                print("[[VOICE RECOGNITION]]""Exiting..")
                 break
 
             num_chars_printed = 0
 
-def stt_main(output_queue: queue.Queue = None):
+def stt_main(output_queue: queue.Queue = None, convert: bool = False):
     # See http://g.co/cloud/speech/docs/languages
     # for a list of supported languages.
     language_code = "ja-JP"  # a BCP-47 language tag
