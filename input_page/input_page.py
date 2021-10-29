@@ -9,6 +9,7 @@ from typing import List
 class InputForm:
     label: str
     input_type: type    # int,strの値を取る
+    default_value_str: str = 'なし'#strを取る入力値のデフォルト
 
 #入力データいれ
 class input_data():
@@ -124,6 +125,7 @@ class Application(tk.Frame):
                 Static = tk.Label(text=input_form.label,font = ("Helvetica", "20"),bg="white")
                 Static.pack(in_ = frame_place)
                 EditBox = tk.Entry(width=25,textvariable=tk.StringVar())
+                EditBox.insert(0, input_form.default_value_str)
                 EditBox.pack(in_ = frame_place)
                 self.EditBox_dict[input_form.label]=EditBox
         
@@ -168,7 +170,7 @@ def main(input_form_list=None):
     return app.data
 
 def get_test_input_forms():
-    return [InputForm("名前",str), InputForm("コース名",str), InputForm("人数",int), InputForm("子供の人数",int),
+    return [InputForm("名前",str,"石鹸"), InputForm("コース名",str,"system"), InputForm("人数",int), InputForm("子供の人数",int),
             InputForm("狸の匹数",int), InputForm("ジュゴン",int)]
 
 if __name__ == '__main__': # このファイルが直接呼ばれたときだけ以下を呼ぶ
