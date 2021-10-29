@@ -12,4 +12,5 @@ logfile.txt
 ## ignore auto-created files
 */__pycache__/*
 pipfile
+.DS_Store
 # allow
