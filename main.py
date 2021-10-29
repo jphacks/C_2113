@@ -73,7 +73,7 @@ def main():
     #   [obsolete]
     #   vrec_thread = Thread(target=lambda:voice_recognition.main(listen))
     #   vrec_thread.start()
-    stt_thread = threading.Thread(target = voice_recognition.stt_main, args = (listen, True, ))
+    stt_thread = Thread(target = voice_recognition.stt_main, args = (listen, True))
     stt_thread.start()
 
     # ttsの呼び出し
