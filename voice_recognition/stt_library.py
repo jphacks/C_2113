@@ -111,7 +111,7 @@ def stt_main(output_queue: queue.Queue = None, convert: bool = False):
         responses = client.streaming_recognize(streaming_config, requests)
 
         # Now, put the transcription responses to use.
-        listen_print_loop(responses, output_queue)
+        listen_print_loop(responses, output_queue, convert)
 
 if __name__ == "__main__":
     stt_main()
