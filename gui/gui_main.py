@@ -140,7 +140,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         return 1
 
     def _line_text_put(idx, mode, text, isMiddle=False, grid_length=5):
-        print(isMiddle)
+        print(isMiddle, grid_length)
         line_text[idx]["mode"] = mode
         if isMiddle:
             pad_below = 0
@@ -298,7 +298,9 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         background="#A7B3D3",
         font=("Helvetica", "20",),
         height=1,          
-        width=30
+        width=30,
+        anchor='w', 
+        justify='left'
     ) for i in range(line_num)]
     string_LINE_right = [tk.Label(
         # frame_LINE_right,
@@ -309,7 +311,9 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         #background="#ffffff",
         font=("Helvetica", "20",),
         height=1,          
-        width=6
+        width=6, 
+        anchor='w', 
+        justify='left'
     ) for i in range(line_num)]
     LINE_under_title = [tk.Label(
         frame_LINE,
@@ -368,8 +372,8 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
                     sub_root.destroy()
                     speak_txt = list[v.get()]
                     tts_q.put(speak_txt)
-                    line_text_push("speak", speak_txt)
-                    log_text.append(f"You: {speak_txt}")
+                    # line_text_push("speak", speak_txt)
+                    # log_text.append(f"You: {speak_txt}")
                     # speaking_string.set(speak_txt)
 
                 return lambda:inner_destroy(tts_q)
@@ -467,8 +471,8 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
             sub_root.destroy()
 
             temp_v_text = temp_v.get()
-            line_text_push("speak", temp_v_text)
-            log_text.append(f"You: {temp_v_text}")
+            # line_text_push("speak", temp_v_text)
+            # log_text.append(f"You: {temp_v_text}")
             # speaking_string.set(temp_v_text)
             tts_q.put(temp_v_text)
             
@@ -507,8 +511,8 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
 
     def speaking_Button_quick(text, tts_q=tts_queue):
         def inner_speaking_Button_quick(tts_q):
-            line_text_push("speak", text)
-            log_text.append(f"You: {text}")
+            # line_text_push("speak", text)
+            # log_text.append(f"You: {text}")
             # speaking_string.set(text)
             tts_q.put(text)
         return lambda:inner_speaking_Button_quick(tts_q)
@@ -601,10 +605,10 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
                     speak_time = data.sec
                     n = len(txt)
                     for i in range(1, n+1):
-                        line_text_push("speak", txt[:i])
-                        log_text.append(f"You: {txt[:i]}")
                         speaking_string.set(txt[:i])
                         time.sleep(speak_time / n)
+                    line_text_push("speak", txt[:i])
+                    log_text.append(f"You: {txt[:i]}")
                 except Empty:
                     continue
 
@@ -621,11 +625,11 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
                     txt = result.txt
                     n = len(txt)
                     for i in range(1, n+1):
-                        if result.is_final:
-                            line_text_push("listen", txt[:i])
-                        log_text.append(f"Phone: {txt[:i]}")
                         listening_string.set(txt[:i])
                         time.sleep(0.3 / n)
+                    if result.is_final:
+                        line_text_push("listen", txt[:i])
+                        log_text.append(f"Phone: {txt[:i]}")
                 except Empty:
                     continue
 
