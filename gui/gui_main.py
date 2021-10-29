@@ -8,6 +8,7 @@ from typing import Dict, List
 from threading import Thread
 import time
 from queue import Queue, Empty
+import unicodedata
 
 # import interface dataclass from common directory
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common'))
@@ -96,48 +97,79 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     listening_string=tk.StringVar(value="デフォルト")
     
     # lineに保存する文面の管理
+    line_num = 13 # 管理するラインの行数
+    upper_margin = 2 # タイトル分だけ保持する上部の行数の余裕
     line_text = [{
         "mode": None, 
         "text_left": tk.StringVar(value=""), 
         "text_right": tk.StringVar(value="")
-        } for _ in range(15)]
+        } for _ in range(line_num)]
     # log出力用
     log_text = []
     # line_textに新しい文面が追加されたときの処理
     def line_text_push(mode, text):
         isFull = (line_text[-1]["mode"] is not None)
-        for i in range(15):
-            if line_text[i]["mode"] is None or i == 14:
+        # for i in range(line_num):
+        i = 0
+        while i < line_num:
+            print(mode, text, isFull)
+            print(line_text)
+            if line_text[i]["mode"] is None or i == line_num-1:
                 _line_text_set(i, mode, text)
                 return
             elif isFull and line_text[i+1]["mode"] == "listen":
-                _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_left"].get())
+                add = _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_left"].get())
             elif isFull and line_text[i+1]["mode"] == "speak":
-                _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_right"].get())
+                add = _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_right"].get())
+            i += add
 
-    def _line_text_set(idx, mode, text):
+    def _line_text_set(idx, mode, text, isMiddle=False):
+        count = 0
+        for i, c in enumerate(text):
+            count += _char_length(text[i])
+            if count >= 85 and i < len(text)-1:
+                _line_text_put(idx,mode,text[:i+1],isMiddle=True)
+                return _line_text_set(idx,mode,text[i+1:],isMiddle=True)+1
+        if (not isMiddle) and count < 51:
+            _line_text_put(idx,mode,text, grid_length=3)
+        else:
+            _line_text_put(idx,mode,text)
+        return 1
+
+    def _line_text_put(idx, mode, text, isMiddle=False, grid_length=5):
         line_text[idx]["mode"] = mode
+        if isMiddle:
+            pad_below = 0
+        else:
+            pad_below = 3
+
         if mode == "listen":
             line_text[idx]["text_left"].set(text)
             #string_LINE_left[idx]["background"] = "#afecb9"
             string_LINE_left[idx]["background"] ="#B9E2A2",
             string_LINE_left[idx]["width"] = 30
             string_LINE_left[idx].grid_forget()
-            string_LINE_left[idx].grid(row=idx, column=0, columnspan=5)
+            string_LINE_left[idx].grid(row=upper_margin+idx, column=0, columnspan=grid_length, pady=(0,pad_below))
             string_LINE_right[idx]["background"] = "#A7B3D3"
             string_LINE_right[idx]["width"] = 6
             string_LINE_right[idx].grid_forget()
-            string_LINE_right[idx].grid(row=idx, column=5)
+            string_LINE_right[idx].grid(row=upper_margin+idx, column=grid_length, pady=(0,pad_below))
         else:
             line_text[idx]["text_right"].set(text)
             string_LINE_left[idx]["background"] = "#A7B3D3"
             string_LINE_left[idx]["width"] = 6
             string_LINE_left[idx].grid_forget()
-            string_LINE_left[idx].grid(row=idx, column=0)
+            string_LINE_left[idx].grid(row=upper_margin+idx, column=0, pady=(0,pad_below))
             string_LINE_right[idx]["background"] = "#B9E2A2"
             string_LINE_right[idx]["width"] = 30
             string_LINE_right[idx].grid_forget()
-            string_LINE_right[idx].grid(row=idx, column=1, columnspan=5)
+            string_LINE_right[idx].grid(row=upper_margin+idx, column=6-grid_length, columnspan=grid_length, pady=(0,pad_below))
+
+    def _char_length(c):
+        if unicodedata.east_asian_width(c) in ['H', 'Na', 'N']:
+            return 3
+        else:
+            return 5
 
     #プロダクトタイトル
     frame_title=tk.Frame(
@@ -232,17 +264,27 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     #ログのLINE表示用スペース
     frame_LINE=tk.LabelFrame(
         root,
-        bg="white",
+        # bg="white",
+        bg="#A7B3D3",
         bd=0,
         font=("Helvetica", "30", "bold"),
-        foreground="#00B900",
-        text="会話ログ",
         labelanchor=tk.N,
         relief="solid",
-        highlightcolor="blue",
-        
+        # highlightcolor="blue",
     )
     frame_LINE.grid(row=2,column=0,columnspan=2,rowspan=2,padx=8,sticky=tk.NSEW)
+
+    # タイトル部分とメッセージ表示部分で背景色を変えるためタイトルは別途作成
+    title_LINE=tk.Label(
+        root, 
+        bg="white",
+        text="会話ログ",
+        font=("Helvetica", "30", "bold"),
+        highlightcolor="blue",
+        foreground="#00B900",
+        width=26 # ここを27or28にすればメッセージの横に余白が作れる（多分）
+    )
+    title_LINE.grid(row=2,column=0,columnspan=2,rowspan=1,sticky=tk.N)
 
     string_LINE_left = [tk.Label(
         frame_LINE,
@@ -253,7 +295,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         font=("Helvetica", "20",),
         height=1,          
         width=30
-    ) for i in range(15)]
+    ) for i in range(line_num)]
     string_LINE_right = [tk.Label(
         # frame_LINE_right,
         frame_LINE,
@@ -264,11 +306,20 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         font=("Helvetica", "20",),
         height=1,          
         width=6
-    ) for i in range(15)]
+    ) for i in range(line_num)]
+    LINE_under_title = [tk.Label(
+        frame_LINE,
+        text="", 
+        background="#A7B3D3", 
+        height=1
+    ) for i in range(upper_margin)]
 
-    for i in range(15):
-        string_LINE_left[i].grid(row=i,column=0,columnspan=5)
-        string_LINE_right[i].grid(row=i,column=5)
+    for i in range(upper_margin):
+        LINE_under_title[i].grid(row=i,column=0,columnspan=6)
+
+    for i in range(line_num):
+        string_LINE_left[i].grid(row=upper_margin+i,column=0,columnspan=5, pady=(0,3))
+        string_LINE_right[i].grid(row=upper_margin+i,column=5, pady=(0,3))
 
     #ボタンが押されたときの関数
     #発声文章リストを受け取る
