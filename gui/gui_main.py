@@ -81,6 +81,7 @@ def get_test_data():
 
 
 def main(tts_queue, buttons, speaking_queue=None, listening_queue=None): 
+    print("[[GUI MAIN]]", f"initialize. button size: {len(buttons)}")
     
     #root の設定（サイズは1380x900）
     root = tk.Tk()

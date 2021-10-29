@@ -112,6 +112,7 @@ def tts_and_speak(txt: str, id: int, output_queue: queue.Queue = None) -> None:
 	playsound(ofile)
 
 def main(txt_queue: queue.Queue, output_queue: queue.Queue, debug: bool = False) -> None:
+    print("[[TTS]]", f"debug={debug}")
     i = 0
     while    True:
         try:

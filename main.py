@@ -7,9 +7,7 @@ import tts
 import voice_recognition
 import input_page
 
-def main(debug_mode = False):
-    # 入力画面
-    #  入力内容リスト(List[InputForm])を作ると良い
+def get_input_list():
     input_list = []
     add = lambda name,type_:input_list.append(input_page.InputForm(name,type_))
     add("名前", str)
@@ -27,7 +25,28 @@ def main(debug_mode = False):
     add("席の位置", str)
     add("苦手な食べ物", str)
     add("移動手段", str)
-    input_data = input_page.main(input_list)
+    return input_list
+
+def get_test_input():
+    dic = {}
+    for input_form in get_input_list():
+        if input_form.input_type is int:
+            dic[input_form.label] = 1
+        elif input_form.input_type is str:
+            dic[input_form.label] = "str"
+    return dic
+
+def call_input():
+    # 入力画面
+    input_list = get_input_list()
+    return input_page.main(input_list)
+
+def main(debug_mode = False, skip_input=False):
+    if skip_input and debug_mode:
+        print("[[MAIN]]", "skip input form")
+        input_data = get_test_input()
+    else:
+        input_data = call_input()
 
     # Button Dataの作成
     buttons = []
@@ -76,10 +95,6 @@ def main(debug_mode = False):
     transportation = input_data["移動手段"]
     add("移動手段",[f"{transportation}で向かいます。",f"{transportation}を使います。","駐車場はありますか?"])
 
-    ##general(12のセリフ) 1~12
-    for i in range(18-len(buttons)):
-        buttons.append(gui.ButtonData("人数", [f'{i}人でお願いします' for i in range(18)]))
-
     add("挨拶",["おはようございます。","こんにちは。","夜分遅くに失礼します。",])
     add("急かす",["忙しいものですから、早い対応をお願いします。","時間がありませんので、なるべく早くお願いします。","早い時間におねがいします。"])
     add("社交辞令",["いつもお世話になっております。","ご丁寧にありがとうございます。"])
@@ -110,6 +125,7 @@ def main(debug_mode = False):
         stt_thread.start()
 
     # メイン画面の呼び出し
+    print("[[MAIN]]", "call gui.main")
     root = gui.main(tts_queue, buttons, speak, listen)
     root.mainloop() # ここで待機
 
@@ -150,5 +166,6 @@ def test_gui_integration():
     root.mainloop()
 
 if __name__ == '__main__':
-   main(True) 
+   main(debug_mode=True, skip_input=True) 
+
    # test_gui_integration()
