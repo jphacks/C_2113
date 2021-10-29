@@ -70,8 +70,11 @@ def main():
     listen = queue.Queue()
 
     # 音声認識の呼び出し
-    vrec_thread = Thread(target=lambda:voice_recognition.main(listen))
-    vrec_thread.start()
+    #   [obsolete]
+    #   vrec_thread = Thread(target=lambda:voice_recognition.main(listen))
+    #   vrec_thread.start()
+    stt_thread = Thread(target = voice_recognition.stt_main, args = (listen, True))
+    stt_thread.start()
 
     # ttsの呼び出し
 
@@ -93,16 +96,18 @@ def test_gui_integration():
 
     def tester():
         script = [
-            ["はい、こちら応物ピザ本郷店でございます",1.5],
+            ["はい、こちら応物ピザ",0.5, False],
+            ["はい、こちら応物ピザ本郷店でございます",1.0, True],
             ["出前をお願いしたいのですが", 1],
-            ["かしこまりました。\nメニューはいかがされますか？", 1.2],
+            ["かしこまりました。", 0.6,False],
+            ["かしこまりました。\nメニューはいかがされますか？", 0.6, True],
             ["マルチンゲールのLサイズでお願いします", 1.5],
             ["かしこまりました", 1.3],
         ]
         time.sleep(3.0)
-        for i,comment in enumerate(script):
-            if (i%2)==0:
-                listen.put(comment[0])
+        for comment in script:
+            if len(comment) > 2:
+                listen.put(gui.ListeningData(txt=comment[0], is_final=comment[2]))
             else:
                 speak.put(gui.SpeakingData(txt=comment[0], sec=comment[1]))
             time.sleep(comment[1])
@@ -115,3 +120,4 @@ def test_gui_integration():
 
 if __name__ == '__main__':
    main() 
+   # test_gui_integration()
