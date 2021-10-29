@@ -111,3 +111,15 @@ def tts_and_speak(txt: str, id: int, output_queue: queue.Queue = None) -> None:
 		output_queue.put(SpeakingData(txt=txt, sec=playtime))
 	playsound(ofile)
 
+def main(txt_queue: queue.Queue, output_queue: queue.Queue) -> None:
+    i = 0
+    while    True:
+        try:
+            txt = txt_queue.get(timeout=500.0)
+            tts_and_speak(txt, i, output_queue)
+            i += 1
+        except:
+            print("[[TTS]]", "get text timeout.")
+            continue
+
+
