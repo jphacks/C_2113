@@ -12,11 +12,11 @@ def get_input_list():
     add = lambda name,type_:input_list.append(input_page.InputForm(name,type_))
     add("名前", str)
     add("人数", int)
-    add("コース名", str)
-    add("何時から", int)
     add("日付(月)", int)
     add("日付(日)", int)
+    add("何時から", int)
     add("記念日", str)
+    add("コース名", str)
     add("支払いカード", str)
     add("ポイント", str)
     add("子供の数", int)
@@ -162,7 +162,7 @@ def test_gui_integration():
     root.mainloop()
 
 if __name__ == '__main__': 
-    main(debug_mode=True, skip_input=True, tts_skip=True, stt_skip=True) 
+    main(debug_mode=True, skip_input=False, tts_skip=True, stt_skip=True) 
 
 
 
