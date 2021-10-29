@@ -41,7 +41,7 @@ def call_input():
     input_list = get_input_list()
     return input_page.main(input_list)
 
-def main(debug_mode = False, skip_input=False):
+def main(debug_mode = False, skip_input=False, tts_skip=False, stt_skip=False):
     if skip_input and debug_mode:
         print("[[MAIN]]", "skip input form")
         input_data = get_test_input()
@@ -113,11 +113,11 @@ def main(debug_mode = False, skip_input=False):
     listen = queue.Queue()
 
     # ttsの呼び出し
-    tts_thread = Thread(target = lambda:tts.main(tts_queue, speak, debug_mode))
+    tts_thread = Thread(target = lambda:tts.main(tts_queue, speak, tts_skip and debug_mode))
     tts_thread.start()
 
     # 音声認識の呼び出し
-    if debug_mode:
+    if stt_skip and debug_mode:
         vrec_thread = Thread(target=lambda:voice_recognition.main(listen))
         vrec_thread.start()
     else:
@@ -165,7 +165,9 @@ def test_gui_integration():
 
     root.mainloop()
 
-if __name__ == '__main__':
-   main(debug_mode=True, skip_input=True) 
+if __name__ == '__main__': 
+    main(debug_mode=True, skip_input=False, tts_skip=True, stt_skip=True) 
+
+
 
    # test_gui_integration()

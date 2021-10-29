@@ -628,10 +628,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
                 try:
                     result = q.get(timeout=100.0)
                     txt = result.txt
-                    n = len(txt)
-                    for i in range(1, n+1):
-                        listening_string.set(txt[:i])
-                        time.sleep(0.3 / n)
+                    listening_string.set(txt)
                     if result.is_final:
                         line_text_push("listen", txt[:i])
                         log_text.append(f"Phone: {txt[:i]}")

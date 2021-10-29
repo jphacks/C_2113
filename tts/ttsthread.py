@@ -25,7 +25,7 @@ def get_token() -> str:
 	             stdout=sp.PIPE,
 	             stderr=sp.PIPE,
 	             encoding='utf-8')
-	print(res.stderr)
+	print("[[TTS]]", f"error=[res.stderr]")
 	return res.stdout.strip()
 
 
@@ -95,12 +95,12 @@ def gtts(txt: str, ofile: str) -> int:
 			dat = response.read()
 			body = json.loads(dat)
 			ret = output_mp3(body, ofile)
-			print("done..")
+			print("[[TTS]]", "done..")
 		return ret
 	except urllib.error.URLError as e:
-		print("error happen...")
-		print(e.reason)
-		print(e)
+		print("[[TTS]]", "error happen...")
+		print("[[TTS]]", e.reason)
+		print("[[TTS]]", e)
 		return -1
 
 
@@ -108,7 +108,7 @@ def tts_and_speak(txt: str, id: int, output_queue: queue.Queue = None) -> None:
 	ofile = "tts" + str(id) + ".mp3"
 	playtime = gtts(txt, ofile)
 	if (output_queue is not None):
-		output_queue.put(SpeakingData(txt=txt, sec=playtime))
+		output_queue.put(SpeakingData(txt=txt, sec=playtime*1e-3))
 	playsound(ofile)
 
 def main(txt_queue: queue.Queue, output_queue: queue.Queue, debug: bool = False) -> None:
