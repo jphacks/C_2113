@@ -3,8 +3,11 @@
 *.wav
 *.mp3
 
-## ignoer log
+## ignore log
 logfile.txt
+
+## ignore vim swp file
+*.swp
 
 ## ignore auto-created files
 */__pycache__/*

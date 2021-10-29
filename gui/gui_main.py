@@ -479,27 +479,23 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     def Button_place():
         global v_general
         for i in range(7):
-            if v_general.get()==0:
-                val_general=buttons[-1].choices[i]
+            choice = 7 * v_general.get() + i
+            if choice < len(buttons[-1].choices):
+                val_general=buttons[-1].choices[choice]
+                Button_general=tk.Button(
+                    frame_general,
+                    text=val_general,
+                    font=("Helvetica", "20",),
+                    foreground="red",
+                    background="#e6f7f6",
+                    height=1,
+                    width=45,
+                    pady=5,
+                    command=speaking_Button_quick(val_general),
+                    relief=tk.RAISED,
                 
-            elif v_general.get()==1:
-                val_general=buttons[-1].choices[7+i]
-            elif v_general.get()==2:
-                val_general=buttons[-1].choices[14+i]
-            Button_general=tk.Button(
-                frame_general,
-                text=val_general,
-                font=("Helvetica", "20",),
-                foreground="red",
-                background="#e6f7f6",
-                height=1,
-                width=45,
-                pady=5,
-                command=speaking_Button_quick(val_general),
-                relief=tk.RAISED,
-                
-            )
-            Button_general.grid(row=i+1,column=0,columnspan=3,sticky=tk.NSEW)
+                )   
+                Button_general.grid(row=i+1,column=0,columnspan=3,sticky=tk.NSEW)
     
     #ボタン初期配置
     Button_place()
