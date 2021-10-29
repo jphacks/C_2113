@@ -664,7 +664,7 @@ if __name__ == '__main__': # このファイルが直接呼ばれたときだけ
                 time.sleep(0.1)
                 continue
             txt = q.get()
-            q2.put(SpeakingData(txt=txt, sec=1.0))
+            q2.put(SpeakingData(txt=txt, sec=0.3))
             print(f'[[TTS]] {txt}')
     tts_thread = Thread(target=lambda:tts_mock(tts_que, speaking_queue))
     tts_thread.start()
