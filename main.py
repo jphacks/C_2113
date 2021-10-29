@@ -33,7 +33,7 @@ def get_test_input():
         if input_form.input_type is int:
             dic[input_form.label] = 1
         elif input_form.input_type is str:
-            dic[input_form.label] = "str"
+            dic[input_form.label] = f"[{input_form.label}]"
     return dic
 
 def call_input():
