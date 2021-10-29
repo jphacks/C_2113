@@ -64,7 +64,7 @@ def listen_print_loop(responses, output_queue: queue.Queue, convert):
         if (output_queue is not None):
             if convert:
                 ret = ListeningData(txt=result.alternatives[0].transcript, is_final=result.is_final)
-                output_queue.put(result)
+                output_queue.put(ret)
             else:
                 output_queue.put(result)
         if not result.is_final:
@@ -113,7 +113,7 @@ def stt_main(output_queue: queue.Queue = None, convert: bool = False):
         responses = client.streaming_recognize(streaming_config, requests)
 
         # Now, put the transcription responses to use.
-        listen_print_loop(responses, output_queue)
+        listen_print_loop(responses, output_queue, convert)
 
 if __name__ == "__main__":
     stt_main()
