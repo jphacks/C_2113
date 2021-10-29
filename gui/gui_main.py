@@ -65,7 +65,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         line_text[idx]["isMiddle"] = isMiddle # 長さが短くても，切り取られたあとのものである可能性があるためFalseとは限らない
         count = 0
         for i, c in enumerate(text):
-            count += _char_length(text[i])
+            count += _char_length(c)
             if count >= 85 and i < len(text)-1:
                 line_text[idx]["isMiddle"] = True
                 _line_text_put(idx,mode,text[:i+1],isMiddle=True)
@@ -236,7 +236,9 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         background="#A7B3D3",
         font=("Helvetica", "20",),
         height=1,          
-        width=30
+        width=30, 
+        anchor='w', 
+        justify='left'
     ) for i in range(line_num)]
     string_LINE_right = [tk.Label(
         # frame_LINE_right,
@@ -247,7 +249,9 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         #background="#ffffff",
         font=("Helvetica", "20",),
         height=1,          
-        width=6
+        width=6, 
+        anchor='w', 
+        justify='left'
     ) for i in range(line_num)]
     LINE_under_title = [tk.Label(
         frame_LINE,
