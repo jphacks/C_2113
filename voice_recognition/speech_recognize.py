@@ -3,7 +3,14 @@ import threading
 import time
 import speech_recognition as sr
 
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../common'))
+from interface_struct import ListeningData
+
+
 def main(q):
+    print("[[VOICE RECOGNITION]]", "speech recognition start.")
     r = sr.Recognizer()
     mic = sr.Microphone()
 
@@ -15,7 +22,7 @@ def main(q):
             
             result = r.recognize_google(audio, language='ja-JP')
             print("[[VOICE RECOGNITION]]", result)
-            q.put(result)
+            q.put(ListeningData(txt=result, is_final=True))
 
         # 以下は認識できなかったときに止まらないように。
         except sr.UnknownValueError:

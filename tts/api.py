@@ -19,7 +19,7 @@ def get_token() -> str:
 	             stdout=sp.PIPE,
 	             stderr=sp.PIPE,
 	             encoding='utf-8')
-	print(res.stderr)
+	print("[[TTS]]", res.stderr)
 	return res.stdout.strip()
 
 
@@ -86,11 +86,11 @@ def gtts(txt: str, ofile: str) -> None:
 			dat = response.read()
 			body = json.loads(dat)
 			output_mp3(body, ofile)
-			print("done..")
+			print("[[TTS]]""done..")
 	except urllib.error.URLError as e:
-		print("error happen...")
-		print(e.reason)
-		print(e)
+		print("[[TTS]]""error happen...")
+		print("[[TTS]]", e.reason)
+		print("[[TTS]]", e)
 
 
 if __name__ == "__main__":
