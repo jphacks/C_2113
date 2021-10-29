@@ -35,12 +35,13 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     listening_string=tk.StringVar(value="デフォルト")
     
     # lineに保存する文面の管理
-    line_num = 13 # 管理するラインの行数
-    upper_margin = 2 # タイトル分だけ保持する上部の行数の余裕
+    line_num = 12 # 管理するラインの行数（自分はmacだと13，学科pcだと12がいい感じだった．）
+    upper_margin = 15 - line_num # タイトル分だけ保持する上部の行数の余裕
     line_text = [{
         "mode": None, 
         "text_left": tk.StringVar(value=""), 
-        "text_right": tk.StringVar(value="")
+        "text_right": tk.StringVar(value=""), 
+        "isMiddle": False
         } for _ in range(line_num)]
     # log出力用
     log_text = []
@@ -50,31 +51,34 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         # for i in range(line_num):
         i = 0
         while i < line_num:
-            print(mode, text, isFull)
-            print(line_text)
+            add = 1
             if line_text[i]["mode"] is None or i == line_num-1:
-                _line_text_set(i, mode, text)
+                _line_text_set(i, mode, text, isMiddle=line_text[i]["isMiddle"])
                 return
             elif isFull and line_text[i+1]["mode"] == "listen":
-                add = _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_left"].get())
+                add = _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_left"].get(), isMiddle=line_text[i+1]["isMiddle"])
             elif isFull and line_text[i+1]["mode"] == "speak":
-                add = _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_right"].get())
+                add = _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_right"].get(), isMiddle=line_text[i+1]["isMiddle"])
             i += add
 
     def _line_text_set(idx, mode, text, isMiddle=False):
+        line_text[idx]["isMiddle"] = isMiddle # 長さが短くても，切り取られたあとのものである可能性があるためFalseとは限らない
         count = 0
         for i, c in enumerate(text):
             count += _char_length(text[i])
             if count >= 85 and i < len(text)-1:
+                line_text[idx]["isMiddle"] = True
                 _line_text_put(idx,mode,text[:i+1],isMiddle=True)
-                return _line_text_set(idx,mode,text[i+1:],isMiddle=True)+1
+                return _line_text_set(idx+1,mode,text[i+1:])+1
+        print(count)
         if (not isMiddle) and count < 51:
-            _line_text_put(idx,mode,text, grid_length=3)
+            _line_text_put(idx,mode,text, grid_length=3, isMiddle=isMiddle)
         else:
-            _line_text_put(idx,mode,text)
+            _line_text_put(idx,mode,text, isMiddle=isMiddle)
         return 1
 
     def _line_text_put(idx, mode, text, isMiddle=False, grid_length=5):
+        print(isMiddle)
         line_text[idx]["mode"] = mode
         if isMiddle:
             pad_below = 0
