@@ -19,8 +19,69 @@ class ButtonData:
     label: str
     choices: List[str]
 
-def main(tts_queue, buttons, speaking_queue=None, listening_queue=None): 
+# Button Dataのテストデータ作成
+def get_test_data():
+    buttons = []
+    add = lambda name,choices:buttons.append(ButtonData(name, choices))
+    ## 名前 1
+    name = "あ"
+    add("名前", [f"{name}と申します", f"{name}です", f"{name}ですけれども", f"{name}です、先日はお世話になりました"])
+    ## 人数 2
+    n = 2
+    add("人数", [f"{n}人でお願いします", f"{n}人なのですがいけますか？", f"今のところ{n}人の予定です", f"{n}人です"])
+    ## コース 3
+    course = "あ"
+    add("コース", [f"{course}でお願いします", f"{course}でお願いしたいのですが",f"{course}で予約できますか"]) 
+    ## 時間 4
+    jikan = "あ"
+    add("時間", [f"{jikan}時からでお願いします", f"{jikan}時からでいけますか？", f"{jikan}時からで大丈夫でしょうか"])
+    ## 持ち帰り 5
+    take_out = "あ"
+    add("持ち帰り", [f"持ち帰りで{take_out}をお願いします。",f"{take_out}の持ち帰りをお願いします。"])
+    ## 日付 6
+    month = "あ"
+    date = "あ"
+    add("日付", [f"{month}月{date}日でお願いします。",f"{month}月{date}日に予約したいです。",f"{month}月{date}日の予約は可能ですか"])
+    ## 記念日 7
+    aniversary = "あ"
+    add("誕生日", [f"{month}月{date}日は{aniversary}です。",f"{date}日は{aniversary}です。",f"{aniversary}をお祝いしたいと思っています。"])
+    ## クレジットカード 8
+    pay = "あ"
+    add("クレジットカード", [f"{pay}は使えますか？",f"{pay}で支払います。",f"{pay}加盟店ですか？"])
+    ## ポイント Go to eat 9
+    point = "あ"
+    add("ポイント", [f"{point}は使えますか?",f"{point}対象店ですか？",f"{point}は貯まりますか？"])
+    ## 子供 10
+    children = "あ"
+    add("子供", [f"子供が{children}人います。",f"{n}のうち子供が{children}です。",f"{children}人子供がいますが大丈夫ですか。"])
+    ## 電話番号 11
+    phone = "あ"
+    add("電話", [f"電話番号は{phone}なります。",f"電話番号は{phone}です。",f"ケータイは{phone}です。"])
+    ## 席の位置 12
+    place = "あ"
+    add("席",[f"席は{place}の近くでお願いします。",f"{place}近くに席をお願いします。",f"{place}側にお願いします。"])
+        ## 苦手な食べ物 13
+    hate = "あ"
+    add("苦手",[f"{hate}は食べられません。",f"{hate}が入った食べ物は避けてください。",f"{hate}が嫌いです。"])
+    ## 移動手段 14
+    transportation = "あ"
+    add("移動手段",[f"{transportation}で向かいます。",f"{transportation}を使います。","駐車場はありますか?"])
 
+    add("時間(午前)", [f"{i}時からは空いてますか？" for i in [8,9,10,11,12]])
+    add("時間(昼)", [f"{i}時からは空いてますか？" for i in [11,12,13,14,15,16]])
+    add("時間(夕方)", [f"{i}時からは空いてますか？" for i in [14,15,16,17,18,19]])
+    add("時間(夜)", [f"{i}時からは空いてますか？" for i in [18,19,20,21,22,23]])
+
+    add("その他",["おはようございます。","こんにちは。","夜分遅くに失礼します。","忙しいものですから、早い対応をお願いします。",
+        "時間がありませんので、なるべく早くお願いします。","早い時間におねがいします。","いつもお世話になっております。",
+        "ご丁寧にありがとうございます。","よろしくお願いします。","少々お待ち下さい","大丈夫です。",
+        "よく聞こえませんでした。もう一度お聞きしてよろしいですか？","ちょっとよく聞こえなくて","Pardon?",
+        "直接口頭でお話します。","家族が代わってくれるようなので、かわります。","ヘルパーさんがきてくれたのでかわります。","17",
+        "18","19","20",])
+
+
+def main(tts_queue, buttons, speaking_queue=None, listening_queue=None): 
+    
     #root の設定（サイズは1380x900）
     root = tk.Tk()
     root.title(u"main")
@@ -57,21 +118,22 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         line_text[idx]["mode"] = mode
         if mode == "listen":
             line_text[idx]["text_left"].set(text)
-            string_LINE_left[idx]["background"] = "#afecb9"
+            #string_LINE_left[idx]["background"] = "#afecb9"
+            string_LINE_left[idx]["background"] ="#B9E2A2",
             string_LINE_left[idx]["width"] = 30
             string_LINE_left[idx].grid_forget()
             string_LINE_left[idx].grid(row=idx, column=0, columnspan=5)
-            string_LINE_right[idx]["background"] = "#ffffff"
+            string_LINE_right[idx]["background"] = "#A7B3D3"
             string_LINE_right[idx]["width"] = 6
             string_LINE_right[idx].grid_forget()
             string_LINE_right[idx].grid(row=idx, column=5)
         else:
             line_text[idx]["text_right"].set(text)
-            string_LINE_left[idx]["background"] = "#ffffff"
+            string_LINE_left[idx]["background"] = "#A7B3D3"
             string_LINE_left[idx]["width"] = 6
             string_LINE_left[idx].grid_forget()
             string_LINE_left[idx].grid(row=idx, column=0)
-            string_LINE_right[idx]["background"] = "#86d792"
+            string_LINE_right[idx]["background"] = "#B9E2A2"
             string_LINE_right[idx]["width"] = 30
             string_LINE_right[idx].grid_forget()
             string_LINE_right[idx].grid(row=idx, column=1, columnspan=5)
@@ -170,7 +232,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     frame_LINE=tk.LabelFrame(
         root,
         bg="white",
-        bd=1,
+        bd=0,
         font=("Helvetica", "30", "bold"),
         foreground="#00B900",
         text="会話ログ",
@@ -185,8 +247,9 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         frame_LINE,
         textvariable=line_text[i]["text_left"], 
         foreground='#000000', 
-        background="#ffffff",
-        font=("Helvetica", "20", "bold"),
+        #background="#ffffff",
+        background="#A7B3D3",
+        font=("Helvetica", "20",),
         height=1,          
         width=30
     ) for i in range(15)]
@@ -195,8 +258,9 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         frame_LINE,
         textvariable=line_text[i]["text_right"], 
         foreground='#000000', 
-        background="#ffffff",
-        font=("Helvetica", "20", "bold"),
+        background="#A7B3D3",
+        #background="#ffffff",
+        font=("Helvetica", "20",),
         height=1,          
         width=6
     ) for i in range(15)]
@@ -290,15 +354,16 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
 
 
     for i in range(2):
-        for j in range(7):
+        for j in range(8):
             Button_choice=tk.Button(
                 frame_Button,
-                text=buttons[7*i+j].label,
-                font=("Helvetica", "25"),
+                text=buttons[8*i+j].label,
+                font=("Helvetica", "20"),
                 background="white",
                 relief=tk.RAISED,
                 pady=5,
-                command=speaking_button_popup(buttons[7*i+j].choices)
+                width=13,
+                command=speaking_button_popup(buttons[8*i+j].choices)
             )
             Button_choice.grid(row=1+j,column=i,sticky=tk.NSEW)      
 
@@ -319,8 +384,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
 
         typing_title=tk.Label(
         sub_root,
-        text=u"話したい文章を記入してください", 
-        #foreground='#00b0d9', 
+        text=u"話したい文章を記入してください",  
         background='#FFFFFF',
         font=("Helvetica", "30", ),
         height=1,
@@ -371,15 +435,15 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     Button_choice_free=tk.Button(
         frame_Button,
         text="自由入力",
-        font=("Helvetica", "25", "bold"),
-        foreground="indigo",
+        font=("Helvetica", "25",),
+        foreground="#7030A0",
         background="yellow",
         relief=tk.RAISED,
         pady=5,
         width=25,
         command=speaking_typing_popup
     )
-    Button_choice_free.grid(row=8,column=0,columnspan=2,sticky=tk.NSEW)
+    Button_choice_free.grid(row=9,column=0,columnspan=2,sticky=tk.NSEW)
 
 
     #一般的な言葉のボタン
@@ -413,32 +477,34 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
 
     def Button_place():
         global v_general
-        for i in range(6):
+        for i in range(7):
             if v_general.get()==0:
                 val_general=buttons[-1].choices[i]
                 
             elif v_general.get()==1:
-                val_general=buttons[-1].choices[6+i]
+                val_general=buttons[-1].choices[7+i]
+            elif v_general.get()==2:
+                val_general=buttons[-1].choices[14+i]
             Button_general=tk.Button(
                 frame_general,
                 text=val_general,
-                font=("Helvetica", "25",),
+                font=("Helvetica", "20",),
                 foreground="red",
                 background="#e6f7f6",
                 height=1,
-                width=35,
+                width=45,
                 pady=5,
                 command=speaking_Button_quick(val_general),
                 relief=tk.RAISED,
                 
             )
-            Button_general.grid(row=i+1,column=0,columnspan=2,sticky=tk.NSEW)
+            Button_general.grid(row=i+1,column=0,columnspan=3,sticky=tk.NSEW)
     
     #ボタン初期配置
     Button_place()
     
             
-    for i in range(2):
+    for i in range(3):
         radio = tk.Radiobutton(
             frame_general,
             text=f"ページ {i+1}",
@@ -448,7 +514,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
             background="white",
             command=Button_place
         )
-        radio.grid(row=7,column=i)
+        radio.grid(row=8,column=i)
     
 
     string_general=tk.Label(
@@ -457,7 +523,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         font=("Helvetica", "20"),
         background="white",
     )
-    string_general.grid(row=0,column=0,columnspan=2)
+    string_general.grid(row=0,column=0,columnspan=3)
 
     string_tale = tk.Label(
         frame_general,
@@ -468,29 +534,8 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         height=1,
         width=10,
     )
-    string_tale.grid(row=8,column=1,ipady=7,pady=12,sticky=tk.SE)
-
-    """
-    frame_tale=tk.Frame(
-        root,
-        #background='#00b0d9',
-        background="white"
-    )
-    frame_tale.grid(row=3,column=3,columnspan=2,sticky=tk.NSEW)
-
-
-    string_tale = tk.Label(
-        frame_tale,
-        text=u"aphacks",
-        foreground="white",
-        background='#00b0d9',
-        font=("ＭＳ Ｐゴシック", "15", "bold"),
-        height=1,
-        width=15,
-    )
-    string_tale.pack(anchor=tk.E,side=tk.TOP,ipady=10,)
-    """
-    
+    string_tale.grid(row=9,column=2,ipady=7,pady=12,sticky=tk.SE)
+   
 
     if speaking_queue is not None:
         # Queueを介して喋る内容を受け取る
@@ -543,10 +588,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     return root
 
 if __name__ == '__main__': # このファイルが直接呼ばれたときだけ以下を呼ぶ
-    buttons = []
-    for i in range(18):
-        buttons.append(ButtonData("人数", [f'{i}人でお願いします' for i in range(18)]))
-
+    
         
     tts_que = Queue()
     def tts_mock(q):
@@ -559,7 +601,7 @@ if __name__ == '__main__': # このファイルが直接呼ばれたときだけ
     tts_thread = Thread(target=lambda:tts_mock(tts_que))
     tts_thread.start()
 
-    root = main(tts_que, buttons)
+    root = main(tts_que, get_test_data())
     root.mainloop()
     
 
