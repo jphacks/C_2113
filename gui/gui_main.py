@@ -612,8 +612,8 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
                     for i in range(1, n+1):
                         speaking_string.set(txt[:i])
                         time.sleep(speak_time / n)
-                    line_text_push("speak", txt[:i])
-                    log_text.append(f"You: {txt[:i]}")
+                    line_text_push("speak", txt)
+                    log_text.append(f"You: {txt}")
                 except Empty:
                     continue
 
@@ -630,8 +630,8 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
                     txt = result.txt
                     listening_string.set(txt)
                     if result.is_final:
-                        line_text_push("listen", txt[:i])
-                        log_text.append(f"Phone: {txt[:i]}")
+                        line_text_push("listen", txt)
+                        log_text.append(f"Phone: {txt}")
                 except Empty:
                     continue
 
