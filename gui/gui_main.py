@@ -639,14 +639,16 @@ if __name__ == '__main__': # このファイルが直接呼ばれたときだけ
     
         
     tts_que = Queue()
-    def tts_mock(q):
+    speaking_queue = Queue()
+    def tts_mock(q, q2):
         while True:
             if q.empty():
                 time.sleep(0.1)
                 continue
             txt = q.get()
+            q2.put(SpeakingData(txt=txt, sec=1.0))
             print(f'[[TTS]] {txt}')
-    tts_thread = Thread(target=lambda:tts_mock(tts_que))
+    tts_thread = Thread(target=lambda:tts_mock(tts_que, speaking_queue))
     tts_thread.start()
 
     root = main(tts_que, get_test_data())
