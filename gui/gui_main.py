@@ -667,7 +667,7 @@ if __name__ == '__main__': # このファイルが直接呼ばれたときだけ
         while True:
             txt = input()
             print(f'[[LISTEN]]',txt)
-            q.put(txt)
+            q.put(ListeningData(txt=txt, is_final=True))
     listen_thread = Thread(target=lambda:test_listen(listening_queue))
     listen_thread.start()
 
