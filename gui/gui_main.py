@@ -133,19 +133,24 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
                 return
         # 以前に追加した長いセンテンスはすでに切られて入る長さになった状態でセンテンス内の末尾かどうか確定しているので
         # line_text[idx]["SentencePart"] = 0r1or3でここにくる．なのでそれをline_text[idx]["SentencePart"]に反映
-        line_text[idx]["SentencePart"] = SentencePart
+        """line_text[idx]["SentencePart"] = SentencePart
         if SentencePart == 2:
             line_text[idx]["SentencePart"] = 3#末尾かどうかわからないセンテンス内でここに到達したらセンテンスの末尾ということ
         elif SentencePart == 0:
             line_text[idx]["SentencePart"] = 0#そうでなければ1行で完結するセンテンス
-        print("[[LINE_set]]", count)
+        """
+        if SentencePart == 2:
+            line_text[idx]["SentencePart"] = 3#末尾かどうかわからないセンテンス内でここに到達したらセンテンスの末尾ということ
+        else:
+            line_text[idx]["SentencePart"] = SentencePart#そうでなければ1行で完結するセンテンス
+        # print("[[LINE_set]]", count)
         if SentencePart == 0 and count < 51:
             _line_text_put(idx,mode,text, grid_length=3, SentencePart=line_text[idx]["SentencePart"])
         else:
             _line_text_put(idx,mode,text, SentencePart=line_text[idx]["SentencePart"])
 
     def _line_text_put(idx, mode, text, SentencePart=0, grid_length=5):
-        print("[[LINE_put]]", SentencePart, grid_length)
+        # print("[[LINE_put]]", SentencePart, grid_length)
         line_text[idx]["mode"] = mode
         if SentencePart == 1:
             pad_below = 0
