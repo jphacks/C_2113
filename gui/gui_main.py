@@ -103,7 +103,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         "mode": None, 
         "text_left": tk.StringVar(value=""), 
         "text_right": tk.StringVar(value=""), 
-        "SentencePart": 0# 0: 1行で完結，1: 複数行の最終行以外，2: 複数行の最終行
+        "SentencePart": 0# 0: 1行で完結，1: 複数行の最終行以外，2: センテンス中だが末尾かどうかわからない，3: 複数行の最終行
         } for _ in range(line_num)]
     # log出力用
     log_text = []
@@ -122,18 +122,21 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
             elif isFull and line_text[i+1]["mode"] == "speak":
                 add = _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_right"].get(), SentencePart=line_text[i+1]["SentencePart"])
 
-    def _line_text_set(idx, mode, text, SentencePart=0):# SentencePart==1ならセンテンス内
+    def _line_text_set(idx, mode, text, SentencePart=0):# SentencePart==2ならセンテンス内（末尾かどうかはわからない）
         count = 0
         for i, c in enumerate(text):
             count += _char_length(text[i])
             if count >= 85 and i < len(text)-1:
-                line_text[idx]["SentencePart"] = 1
+                line_text[idx]["SentencePart"] = 1 # 末尾でないことが確定
                 _line_text_put(idx,mode,text[:i+1],SentencePart=line_text[idx]["SentencePart"])
-                line_text_push(mode,text[i+1:], SentencePart=1)
+                line_text_push(mode,text[i+1:], SentencePart=2)# 次の行が末尾かどうかはわからない
                 return
-        if SentencePart == 1:
-            line_text[idx]["SentencePart"] = 2#センテンス内でここに到達したらセンテンスの末尾ということ
-        else:
+        # 以前に追加した長いセンテンスはすでに切られて入る長さになった状態でセンテンス内の末尾かどうか確定しているので
+        # line_text[idx]["SentencePart"] = 0r1or3でここにくる．なのでそれをline_text[idx]["SentencePart"]に反映
+        line_text[idx]["SentencePart"] = SentencePart
+        if SentencePart == 2:
+            line_text[idx]["SentencePart"] = 3#末尾かどうかわからないセンテンス内でここに到達したらセンテンスの末尾ということ
+        elif SentencePart == 0:
             line_text[idx]["SentencePart"] = 0#そうでなければ1行で完結するセンテンス
         print("[[LINE_set]]", count)
         if SentencePart == 0 and count < 51:
