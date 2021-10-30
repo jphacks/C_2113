@@ -173,6 +173,6 @@ def test_gui_integration():
     root.mainloop()
 
 if __name__ == '__main__': 
-    main(debug_mode=True, skip_input=True, tts_skip=False, stt_skip=True) 
+    main(debug_mode=True, skip_input=True, tts_skip=False, stt_skip=False)
 
    # test_gui_integration()
