@@ -1,6 +1,7 @@
 # **チャットアポ**
 
 紹介動画: https://youtu.be/2Gr4OAlKFLk
+https://youtu.be/2Gr4OAlKFLk
 
 [![IMAGE ALT TEXT HERE](https://jphacks.com/wp-content/uploads/2021/07/JPHACKS2021_ogp.jpg)](https://www.youtube.com/watch?v=LUPQFB4QyVo)
 ## 製品概要
@@ -11,7 +12,8 @@
 総務省が、手話を用いる仲介者が間に入る聴覚障がい者向け電話サポート (電話リレーサービス https://nftrs.or.jp/ ) を令和３年７月に開始しましたが、上記のような電話予約へ抵抗を感じる全ての層に対する支援とは言えず、運用コストも課題となります。仲介者が入らない電話支援サービスは現在存在していません。
 
 ### 製品説明（具体的な製品の説明）
-[![IMAGE ALT TEXT HERE](https://gyazo.com/5c72c4c064209e512513946bda3228ab)](https://www.youtube.com/watch?v=LUPQFB4QyVo)
+![IMAGE ALT TEXT HERE](https://i.gyazo.com/5c72c4c064209e512513946bda3228ab.png)
+
 ## 製品概要
 ### 特長
 #### 1.  チャット感覚で電話予約が可能！
