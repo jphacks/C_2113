@@ -521,7 +521,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         text="自由入力",
         font=("Helvetica", "25",),
         foreground="#7030A0",
-        background="yellow",
+        background="white",
         relief=tk.RAISED,
         pady=5,
         width=25,
