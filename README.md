@@ -1,7 +1,6 @@
 # **チャットアポ**
 ## 紹介動画
-http://www.youtube.com/watch?v=2Gr4OAlKFLk
-[![紹介動画](http://img.youtube.com/vi/2Gr4OAlKFLk/0.jpg)](http://www.youtube.com/watch?v=2Gr4OAlKFLk "award_day_pitch")
+[![リンク](https://github.com/jphacks/C_2113/blob/master/thumbnail.png?raw=true)](//www.youtube.com/watch?v=2Gr4OAlKFLk)
 
 ## 製品概要
 **チャットアポ** は飲食店への電話予約を補助するサービスです。さまざまな要因により電話予約を困難だと感じている方を対象に、音声認識・音声合成 技術を用いて円滑な予約をサポートします。
