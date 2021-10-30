@@ -1,7 +1,5 @@
 # **チャットアポ**
-
-紹介動画: https://youtu.be/2Gr4OAlKFLk
-https://youtu.be/2Gr4OAlKFLk
+[![紹介動画](http://img.youtube.com/vi/2Gr4OAlKFLk/0.jpg)](http://www.youtube.com/watch?v=2Gr4OAlKFLk "award_day_pitch")
 
 [![IMAGE ALT TEXT HERE](https://jphacks.com/wp-content/uploads/2021/07/JPHACKS2021_ogp.jpg)](https://www.youtube.com/watch?v=LUPQFB4QyVo)
 ## 製品概要
