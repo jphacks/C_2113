@@ -87,7 +87,8 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     #root の設定（サイズは1380x900）
     root = tk.Tk()
     root.title(u"main")
-    root.geometry("1380x850")
+    #root.geometry("1380x850")
+    root.geometry("1920x1080")
     root.config(background="white")
 
     global sub_root
