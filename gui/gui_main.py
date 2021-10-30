@@ -73,11 +73,11 @@ def get_test_data():
     add("時間(夕方)", [f"{i}時からは空いてますか？" for i in [14,15,16,17,18,19]])
     add("時間(夜)", [f"{i}時からは空いてますか？" for i in [18,19,20,21,22,23]])
 
-    add("その他",["おはようございます。","こんにちは。","夜分遅くに失礼します。","忙しいものですから、早い対応をお願いします。",
-        "時間がありませんので、なるべく早くお願いします。","早い時間におねがいします。","いつもお世話になっております。",
+    add("その他",["おはようございます。","こんにちは。","夜分遅くに失礼します。",
+        "早い時間におねがいします。","いつもお世話になっております。",
         "ご丁寧にありがとうございます。","よろしくお願いします。","少々お待ち下さい","大丈夫です。",
         "よく聞こえませんでした。もう一度お聞きしてよろしいですか？","ちょっとよく聞こえなくて","Pardon?",
-        "直接口頭でお話します。","家族が代わってくれるようなので、かわります。","ヘルパーさんがきてくれたのでかわります。","17",
+        "直接口頭でお話します。","家族が代わってくれるようなので、かわります。","ヘルパーさんがきてくれたのでかわります。","15", "16", "17",
         "18","19","20",])
     return buttons 
     
@@ -87,7 +87,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     #root の設定（サイズは1380x900）
     root = tk.Tk()
     root.title(u"main")
-    root.geometry("1380x850")
+    root.geometry("1000x750")
     root.config(background="white")
 
     global sub_root
@@ -97,8 +97,8 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     listening_string=tk.StringVar(value="デフォルト")
     
     # lineに保存する文面の管理
-    line_num = 12 # 管理するラインの行数（自分はmacだと13，学科pcだと12がいい感じだった．）
-    upper_margin = 15 - line_num # タイトル分だけ保持する上部の行数の余裕
+    line_num = 11 # 管理するラインの行数（自分はmacだと13，学科pcだと12がいい感じだった．）
+    upper_margin = 14 - line_num # タイトル分だけ保持する上部の行数の余裕
     line_text = [{
         "mode": None, 
         "text_left": tk.StringVar(value=""), 
@@ -200,7 +200,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
 
     string_title = tk.Label(
         frame_title,
-        text=u"rityo_math（プロダクト名）",
+        text=u"チャットアポ",
         foreground="white",
         background='#00b0d9',
         font=("ＭＳ Ｐゴシック", "35", "bold"),
@@ -247,7 +247,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         background="#ffffff",
         font=("Helvetica", "25", "bold"),
         height=5,
-        width=49,
+        width=45,
         # これで改行できるけどどうですか？
         wraplength=680,
     )
@@ -274,7 +274,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         background="#ffffff",
         font=("Helvetica", "25", "bold"),
         height=5,
-        width=49,
+        width=45,
         wraplength=680,
     )
     string_speaking.pack()
@@ -437,7 +437,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
                 background="white",
                 relief=tk.RAISED,
                 pady=5,
-                width=13,
+                width=20,
                 command=speaking_button_popup(buttons[8*i+j].choices)
             )
             Button_choice.grid(row=1+j,column=i,sticky=tk.NSEW)      
@@ -543,7 +543,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         font=("Helvetica", "30", "bold"),
         labelanchor=tk.N
     )
-    frame_general.grid(row=2,column=3,columnspan=2,sticky=tk.NSEW)
+    frame_general.grid(row=2,column=3,columnspan=3,sticky=tk.NSEW)
 
 
     #ページ遷移用
@@ -561,9 +561,9 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
                     text=val_general,
                     font=("Helvetica", "20",),
                     foreground="red",
-                    background="#e6f7f6",
+                    background="white",
                     height=1,
-                    width=45,
+                    width=35,
                     pady=5,
                     command=speaking_Button_quick(val_general),
                     relief=tk.RAISED,
@@ -581,7 +581,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
             text=f"ページ {i+1}",
             variable=v_general,
             value=i,
-            font=("Helvetica", "25"),
+            font=("Helvetica", "20"),
             background="white",
             command=Button_place
         )
