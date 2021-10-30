@@ -9,29 +9,37 @@ import input_page
 
 def get_input_list():
     input_list = []
-    add = lambda name,type_:input_list.append(input_page.InputForm(name,type_))
-    add("名前", str)
-    add("人数", int)
-    add("日付(月)", int)
-    add("日付(日)", int)
-    add("何時から", int)
+    def get(name, type_, default=None):
+        if default is None:
+            return input_page.InputForm(label=name, input_type=type_)
+        if type_ is str:
+            return input_page.InputForm(label=name, input_type=type_, default_str=default)
+        elif type_ is int:
+            return input_page.InputForm(label=name, input_type=type_, default_int=default)
+        else:
+            return input_page.InputForm(label=name, input_type=type_)
+    add = lambda name,type_,default=None:input_list.append(get(name, type_, default))
+    add("名前", str, "関")
+    add("人数", int, 2)
+    add("日付(月)", int, 11)
+    add("日付(日)", int, 8)
+    add("何時から", int, 19)
     add("記念日", str)
-    add("コース名", str)
-    add("支払いカード", str)
-    add("ポイント", str)
-    add("子供の数", int)
-    add("電話番号", int)
-    add("苦手な食べ物", str)
-    add("席の位置", str)
+    add("コース名", str, "肉料理")
+    add("支払いカード", str, "Visa")
+    add("ポイント", str, "ポンタカード")
+    add("電話番号", str, "03 1234 5678")
+    add("アレルギー", str, "ピーナッツ")
+    add("席の位置", str, "窓際")
     return input_list
 
 def get_test_input():
     dic = {}
     for input_form in get_input_list():
         if input_form.input_type is int:
-            dic[input_form.label] = 1
+            dic[input_form.label] = input_form.default_int
         elif input_form.input_type is str:
-            dic[input_form.label] = f"[{input_form.label}]"
+            dic[input_form.label] = input_form.default_str
     return dic
 
 def call_input():
@@ -60,38 +68,41 @@ def main(debug_mode = False, skip_input=False, tts_skip=False, stt_skip=False):
     ## コース 3
     course = input_data["コース名"]
     add("コース", [f"{course}でお願いします", f"{course}でお願いしたいのですが",f"{course}で予約できますか"]) 
-    ## 時間 4
+    ## 時間 4 ~ 8
     jikan = input_data["何時から"]
     add("時間", [f"{jikan}時からでお願いします", f"{jikan}時からでいけますか？", f"{jikan}時からで大丈夫でしょうか"])
     add("時間(午前)", [f"{i}時からは空いてますか？" for i in [8,9,10,11,12]])
     add("時間(昼)", [f"{i}時からは空いてますか？" for i in [11,12,13,14,15,16]])
     add("時間(夕方)", [f"{i}時からは空いてますか？" for i in [14,15,16,17,18,19]])
     add("時間(夜)", [f"{i}時からは空いてますか？" for i in [18,19,20,21,22,23]])
-    ## 日付 6
+    ## 予約 9
+    m = input_data["日付(月)"]
+    d = input_data["日付(日)"]
+    h = input_data["何時から"]
+    add("予約", [f"{m}月{d}日の{h}時に予約したいのですけれども",f"{m}月{d}日の{h}時に伺いたいのですが",
+        f"{m}月{d}日の{h}時の予約をとりたいのですが", f"{m}月{d}日の{h}時に予約をお願いします"])
+    ## 日付 10
     month = input_data["日付(月)"]
     date = input_data["日付(日)"]
     add("日付", [f"{month}月{date}日の予約は可能ですか",f"{month}月{date}日でお願いします。",f"{month}月{date}日に予約したいです。"])
-    ## 記念日 7
+    ## 記念日 11
     aniversary = input_data["記念日"]
     add("誕生日", [f"{month}月{date}日は{aniversary}です。",f"{date}日は{aniversary}です。",f"{aniversary}をお祝いしたいと思っています。"])
-    ## 電話番号 11
+    ## 電話番号 12
     phone = input_data["電話番号"]
     add("電話", [f"電話番号は{phone}なります。",f"電話番号は{phone}です。",f"ケータイは{phone}です。"])
-    ## クレジットカード 8
+    ## クレジットカード 13
     pay = input_data["支払いカード"]
     add("クレジットカード", [f"{pay}は使えますか？",f"{pay}で支払います。",f"{pay}加盟店ですか？"])
-    ## ポイント Go to eat 9
+    ## ポイント Go to eat 14
     point = input_data["ポイント"]
     add("ポイント", [f"{point}は使えますか?",f"{point}対象店ですか？",f"{point}は貯まりますか？"])
-    ## 子供 10
-    children = input_data["子供の数"]
-    add("子供", [f"子供が{children}人います。",f"{n}のうち子供が{children}です。",f"{children}人子供がいますが大丈夫ですか。"])
-    ## 席の位置 12
+    ## 席の位置 15
     place = input_data["席の位置"]
     add("席",[f"席は{place}の近くでお願いします。",f"{place}近くに席をお願いします。",f"{place}側にお願いします。"])
-    ## 苦手な食べ物 13
-    hate = input_data["苦手な食べ物"]
-    add("苦手",[f"{hate}は食べられません。",f"{hate}が入った食べ物は避けてください。",f"{hate}が嫌いです。"])
+    ## アレルギー 16
+    hate = input_data["アレルギー"]
+    add("アレルギー",[f"{hate}は食べられません。",f"{hate}が入った食べ物は避けてください。",f"{hate}が嫌いです。",f"{hate}はアレルギーです"])
 
 
 
@@ -162,7 +173,7 @@ def test_gui_integration():
     root.mainloop()
 
 if __name__ == '__main__': 
-    main(debug_mode=True, skip_input=False, tts_skip=False, stt_skip=True) 
+    main(debug_mode=True, skip_input=False, tts_skip=True, stt_skip=True) 
 
 
 
