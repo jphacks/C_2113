@@ -103,46 +103,61 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         "mode": None, 
         "text_left": tk.StringVar(value=""), 
         "text_right": tk.StringVar(value=""), 
-        "isMiddle": False
+        "SentencePart": 0# 0: 1行で完結，1: 複数行の最終行以外，2: センテンス中だが末尾かどうかわからない，3: 複数行の最終行
         } for _ in range(line_num)]
     # log出力用
     log_text = []
     # line_textに新しい文面が追加されたときの処理
-    def line_text_push(mode, text):
+    def line_text_push(mode, text, SentencePart=0):
         isFull = (line_text[-1]["mode"] is not None)
         # for i in range(line_num):
         i = 0
-        while i < line_num:
-            add = 1
+        for i in range(line_num):
             if line_text[i]["mode"] is None or i == line_num-1:
-                _line_text_set(i, mode, text, isMiddle=line_text[i]["isMiddle"])
+                _line_text_set(i, mode, text, SentencePart=SentencePart)
                 return
             elif isFull and line_text[i+1]["mode"] == "listen":
-                add = _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_left"].get(), isMiddle=line_text[i+1]["isMiddle"])
+                _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_left"].get(), SentencePart=line_text[i+1]["SentencePart"])
             elif isFull and line_text[i+1]["mode"] == "speak":
-                add = _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_right"].get(), isMiddle=line_text[i+1]["isMiddle"])
-            i += add
+                _line_text_set(i, line_text[i+1]["mode"], line_text[i+1]["text_right"].get(), SentencePart=line_text[i+1]["SentencePart"])
 
-    def _line_text_set(idx, mode, text, isMiddle=False):
-        line_text[idx]["isMiddle"] = isMiddle # 長さが短くても，切り取られたあとのものである可能性があるためFalseとは限らない
+    def _line_text_set(idx, mode, text, SentencePart=0):# SentencePart==2ならセンテンス内（末尾かどうかはわからない）
+        line_text[idx]["text_left"].set("")
+        line_text[idx]["text_right"].set("")
         count = 0
         for i, c in enumerate(text):
             count += _char_length(text[i])
             if count >= 85 and i < len(text)-1:
-                line_text[idx]["isMiddle"] = True
-                _line_text_put(idx,mode,text[:i+1],isMiddle=True)
-                return _line_text_set(idx+1,mode,text[i+1:])+1
-        print(count)
-        if (not isMiddle) and count < 51:
-            _line_text_put(idx,mode,text, grid_length=3, isMiddle=isMiddle)
+                line_text[idx]["SentencePart"] = 1 # 末尾でないことが確定
+                _line_text_put(idx,mode,text[:i+1],SentencePart=line_text[idx]["SentencePart"])
+                line_text_push(mode,text[i+1:], SentencePart=2)# 次の行が末尾かどうかはわからない
+                return
+        # 以前に追加した長いセンテンスはすでに切られて入る長さになった状態でセンテンス内の末尾かどうか確定しているので
+        # line_text[idx]["SentencePart"] = 0r1or3でここにくる．なのでそれをline_text[idx]["SentencePart"]に反映
+        """line_text[idx]["SentencePart"] = SentencePart
+        if SentencePart == 2:
+            line_text[idx]["SentencePart"] = 3#末尾かどうかわからないセンテンス内でここに到達したらセンテンスの末尾ということ
+        elif SentencePart == 0:
+            line_text[idx]["SentencePart"] = 0#そうでなければ1行で完結するセンテンス
+        """
+        if SentencePart == 2:
+            line_text[idx]["SentencePart"] = 3#末尾かどうかわからないセンテンス内でここに到達したらセンテンスの末尾ということ
         else:
-            _line_text_put(idx,mode,text, isMiddle=isMiddle)
-        return 1
+            line_text[idx]["SentencePart"] = SentencePart#そうでなければ1行で完結するセンテンス
+        # print("[[LINE_set]]", count)
+        if SentencePart == 0 and count < 35:
+            _line_text_put(idx,mode,text, grid_length=2, SentencePart=line_text[idx]["SentencePart"])
+        elif SentencePart == 0 and count < 55:
+            _line_text_put(idx,mode,text, grid_length=3, SentencePart=line_text[idx]["SentencePart"])
+        elif SentencePart == 0 and count < 75:
+            _line_text_put(idx,mode,text, grid_length=4, SentencePart=line_text[idx]["SentencePart"])
+        else:
+            _line_text_put(idx,mode,text, SentencePart=line_text[idx]["SentencePart"])
 
-    def _line_text_put(idx, mode, text, isMiddle=False, grid_length=5):
-        print(isMiddle, grid_length)
+    def _line_text_put(idx, mode, text, SentencePart=0, grid_length=5):
+        # print("[[LINE_put]]", SentencePart, grid_length)
         line_text[idx]["mode"] = mode
-        if isMiddle:
+        if SentencePart == 1:
             pad_below = 0
         else:
             pad_below = 3
@@ -150,22 +165,22 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         if mode == "listen":
             line_text[idx]["text_left"].set(text)
             #string_LINE_left[idx]["background"] = "#afecb9"
-            string_LINE_left[idx]["background"] ="#B9E2A2",
-            string_LINE_left[idx]["width"] = 30
+            string_LINE_left[idx]["background"] ="#eff1eb",
+            string_LINE_left[idx]["width"] = 6*grid_length
             string_LINE_left[idx].grid_forget()
             string_LINE_left[idx].grid(row=upper_margin+idx, column=0, columnspan=grid_length, pady=(0,pad_below))
             string_LINE_right[idx]["background"] = "#A7B3D3"
-            string_LINE_right[idx]["width"] = 6
+            string_LINE_right[idx]["width"] = 6*(6-grid_length)
             string_LINE_right[idx].grid_forget()
-            string_LINE_right[idx].grid(row=upper_margin+idx, column=grid_length, pady=(0,pad_below))
+            string_LINE_right[idx].grid(row=upper_margin+idx, column=grid_length,columnspan=6-grid_length, pady=(0,pad_below))
         else:
             line_text[idx]["text_right"].set(text)
             string_LINE_left[idx]["background"] = "#A7B3D3"
-            string_LINE_left[idx]["width"] = 6
+            string_LINE_left[idx]["width"] = 6*(6-grid_length)
             string_LINE_left[idx].grid_forget()
-            string_LINE_left[idx].grid(row=upper_margin+idx, column=0, pady=(0,pad_below))
+            string_LINE_left[idx].grid(row=upper_margin+idx, column=0, columnspan=6-grid_length, pady=(0,pad_below))
             string_LINE_right[idx]["background"] = "#B9E2A2"
-            string_LINE_right[idx]["width"] = 30
+            string_LINE_right[idx]["width"] = 6*grid_length
             string_LINE_right[idx].grid_forget()
             string_LINE_right[idx].grid(row=upper_margin+idx, column=6-grid_length, columnspan=grid_length, pady=(0,pad_below))
 
@@ -607,8 +622,8 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
                     for i in range(1, n+1):
                         speaking_string.set(txt[:i])
                         time.sleep(speak_time / n)
-                    line_text_push("speak", txt[:i])
-                    log_text.append(f"You: {txt[:i]}")
+                    line_text_push("speak", txt)
+                    log_text.append(f"You: {txt}")
                 except Empty:
                     continue
 
@@ -625,8 +640,8 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
                     txt = result.txt
                     listening_string.set(txt)
                     if result.is_final:
-                        line_text_push("listen", txt[:i])
-                        log_text.append(f"Phone: {txt[:i]}")
+                        line_text_push("listen", txt)
+                        log_text.append(f"Phone: {txt}")
                 except Empty:
                     continue
 
@@ -647,18 +662,26 @@ if __name__ == '__main__': # このファイルが直接呼ばれたときだけ
         
     tts_que = Queue()
     speaking_queue = Queue()
+    listening_queue = Queue()
     def tts_mock(q, q2):
         while True:
             if q.empty():
                 time.sleep(0.1)
                 continue
             txt = q.get()
-            q2.put(SpeakingData(txt=txt, sec=1.0))
+            q2.put(SpeakingData(txt=txt, sec=0.3))
             print(f'[[TTS]] {txt}')
     tts_thread = Thread(target=lambda:tts_mock(tts_que, speaking_queue))
     tts_thread.start()
+    def test_listen(q):
+        while True:
+            txt = input()
+            print(f'[[LISTEN]]',txt)
+            q.put(ListeningData(txt=txt, is_final=True))
+    listen_thread = Thread(target=lambda:test_listen(listening_queue))
+    listen_thread.start()
 
-    root = main(tts_que, get_test_data(), speaking_queue)
+    root = main(tts_que, get_test_data(), speaking_queue, listening_queue)
     root.mainloop()
     
 
