@@ -79,8 +79,8 @@ def main(debug_mode = False, skip_input=False, tts_skip=False, stt_skip=False):
     m = input_data["日付(月)"]
     d = input_data["日付(日)"]
     h = input_data["何時から"]
-    add("予約", [f"{m}月{d}日の{h}時に予約したいのですけれども",f"{m}月{d}日の{h}時に伺いたいのですが",
-        f"{m}月{d}日の{h}時の予約をとりたいのですが", f"{m}月{d}日の{h}時に予約をお願いします"])
+    add("予約", [f"{m}月{d}日の{h}時に予約をお願いします", f"{m}月{d}日の{h}時に予約をとりたいのですが",
+        f"{m}月{d}日の{h}時に予約したいのですけれども",f"{m}月{d}日の{h}時に伺いたいのですが"])
     ## 日付 10
     month = input_data["日付(月)"]
     date = input_data["日付(日)"]
@@ -173,8 +173,6 @@ def test_gui_integration():
     root.mainloop()
 
 if __name__ == '__main__': 
-    main(debug_mode=True, skip_input=True, tts_skip=True, stt_skip=True) 
-
-
+    main(debug_mode=True, skip_input=True, tts_skip=False, stt_skip=True) 
 
    # test_gui_integration()
