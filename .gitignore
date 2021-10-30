@@ -5,6 +5,7 @@
 
 ## ignore log
 logfile.txt
+gui/logfile.txt
 
 ## ignore editor swp file
 *.swp

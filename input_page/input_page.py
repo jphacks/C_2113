@@ -59,7 +59,7 @@ class Application(tk.Frame):
         #タイトル(mainと同一にする)
         string_title = tk.Label(
             self.frame,
-            text=u"rityo_math（プロダクト名）", 
+            text=u"チャットアポ", 
             foreground='#FFFFFF', 
             background='#00b0d9',
             font=("ＭＳ Ｐゴシック", "35", "bold"),
