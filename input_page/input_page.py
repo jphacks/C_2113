@@ -51,7 +51,7 @@ class Application(tk.Frame):
         super().__init__(master)
         self.frame = master
         self.frame.title(u"input")
-        self.frame.geometry("750x600")
+        self.frame.geometry("750x700")
         self.frame.config(background="white")
         self.data={}
         self.EditBox_dict={}
