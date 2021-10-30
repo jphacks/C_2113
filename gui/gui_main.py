@@ -110,6 +110,15 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
     log_text = []
     # line_textに新しい文面が追加されたときの処理
     def line_text_push(mode, text, SentencePart=0):
+        print("[[LINE_push]]", text)
+        if text == "" or text == " ":# よくわかんないけどから文字列が来たら棄却してヨシ！
+            return 
+        if "\n" in text:
+            _text_list = text.split("\n")
+            for _text in _text_list:
+                if _text != "":
+                    line_text_push(_text)
+            return
         isFull = (line_text[-1]["mode"] is not None)
         # for i in range(line_num):
         i = 0
@@ -128,7 +137,7 @@ def main(tts_queue, buttons, speaking_queue=None, listening_queue=None):
         count = 0
         for i, c in enumerate(text):
             count += _char_length(text[i])
-            if count >= 85 and i < len(text)-1:
+            if count >= 80 and i < len(text)-1:
                 line_text[idx]["SentencePart"] = 1 # 末尾でないことが確定
                 _line_text_put(idx,mode,text[:i+1],SentencePart=line_text[idx]["SentencePart"])
                 line_text_push(mode,text[i+1:], SentencePart=2)# 次の行が末尾かどうかはわからない
