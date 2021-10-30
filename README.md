@@ -1,5 +1,7 @@
 # **チャットアポ**
 
+紹介動画: https://youtu.be/2Gr4OAlKFLk
+
 [![IMAGE ALT TEXT HERE](https://jphacks.com/wp-content/uploads/2021/07/JPHACKS2021_ogp.jpg)](https://www.youtube.com/watch?v=LUPQFB4QyVo)
 ## 製品概要
 **チャットアポ** は飲食店への電話予約を補助するサービスです。さまざまな要因により電話予約を困難だと感じている方を対象に、音声認識・音声合成 技術を用いて円滑な予約をサポートします。
