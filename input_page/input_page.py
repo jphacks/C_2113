@@ -8,8 +8,9 @@ from typing import List
 @dataclass
 class InputForm:
     label: str
-    input_type: type    # int,strの値を取る
-    default_value_str: str = 'なし'#strを取る入力値のデフォルト
+    input_type: type            # int,strの値を取る
+    default_str: str = 'なし'   #strを取る入力値のデフォルト
+    default_int: int = -1       #strを取る入力値のデフォルト
 
 #入力データいれ
 class input_data():
@@ -117,15 +118,14 @@ class Application(tk.Frame):
             if input_form.input_type is int:
                 Static = tk.Label(text=input_form.label,font = ("Helvetica", "20"),bg="white")
                 Static.pack(in_ = frame_place)
-                EditBox = tk.Entry(width=25,textvariable=tk.IntVar())
+                EditBox = tk.Entry(width=25,textvariable=tk.IntVar(value=input_form.default_int))
                 EditBox.pack(in_ = frame_place)
                 self.EditBox_dict[input_form.label]=EditBox
                 
             elif input_form.input_type is str:
                 Static = tk.Label(text=input_form.label,font = ("Helvetica", "20"),bg="white")
                 Static.pack(in_ = frame_place)
-                EditBox = tk.Entry(width=25,textvariable=tk.StringVar())
-                EditBox.insert(0, input_form.default_value_str)
+                EditBox = tk.Entry(width=25,textvariable=tk.StringVar(value=input_form.default_str))
                 EditBox.pack(in_ = frame_place)
                 self.EditBox_dict[input_form.label]=EditBox
         
